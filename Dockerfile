@@ -40,7 +40,8 @@ RUN echo 'APP_ENV=prod' > .env \
     && echo 'PLATFORM_COMMISSION_RATE=0.10' >> .env \
     && echo 'ADMIN_PHONE=237600000000' >> .env \
     && echo 'FRONTEND_URL=https://example.com' >> .env \
-    && echo 'TRUSTED_PROXIES=10.0.0.0/8' >> .env
+    && echo 'TRUSTED_PROXIES=10.0.0.0/8' >> .env \
+    && echo 'DEFAULT_URI=http://localhost' >> .env
 
 COPY docker-start.sh /usr/local/bin/docker-start.sh
 RUN chmod +x /usr/local/bin/docker-start.sh
