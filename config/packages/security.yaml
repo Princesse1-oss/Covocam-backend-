@@ -1,0 +1,47 @@
+security:
+    password_hashers:
+        App\Entity\Utilisateur:
+            algorithm: bcrypt
+            cost: 12
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\Utilisateur
+                property: email
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        login:
+            pattern: ^/api/login
+            stateless: true
+            user_checker: App\Security\UserChecker
+            json_login:
+                check_path: /api/login
+                username_path: email
+                password_path: motDePasse
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern: ^/api
+            stateless: true
+            jwt: ~
+
+        main:
+            lazy: true
+            provider: app_user_provider
+            user_checker: App\Security\UserChecker
+
+    access_control:
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/docs, roles: PUBLIC_ACCESS }        
+        - { path: ^/api/health, roles: PUBLIC_ACCESS } 
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER

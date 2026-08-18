@@ -1,0 +1,601 @@
+{
+  "villes": [
+    {
+      "id": 1,
+      "nom": "Yaoundé",
+      "region": "Centre",
+      "quartiers": [
+        { "id": 1, "nom": "Bastos" },
+        { "id": 2, "nom": "Centre-ville" },
+        { "id": 3, "nom": "Obili" },
+        { "id": 4, "nom": "Essos" },
+        { "id": 5, "nom": "Mvog-Bi" },
+        { "id": 6, "nom": "Nkolbisson" },
+        { "id": 7, "nom": "Ekounou" },
+        { "id": 8, "nom": "Mendong" },
+        { "id": 9, "nom": "Etoug-Ebe" },
+        { "id": 10, "nom": "Biyem-Assi" },
+        { "id": 11, "nom": "Tsinga" },
+        { "id": 12, "nom": "Madagascar" },
+        { "id": 13, "nom": "Mokolo" },
+        { "id": 14, "nom": "Mimboman" },
+        { "id": 15, "nom": "Cité Verte" },
+        { "id": 16, "nom": "Oyom-Abang" },
+        { "id": 17, "nom": "Ngousso" },
+        { "id": 18, "nom": "Omnisport" },
+        { "id": 19, "nom": "Mvan" },
+        { "id": 20, "nom": "Nkomkana" },
+        { "id": 21, "nom": "Elig-Essono" },
+        { "id": 22, "nom": "Nlongkak" },
+        { "id": 23, "nom": "Etoa-Meki" },
+        { "id": 24, "nom": "Elig-Edzoa" },
+        { "id": 25, "nom": "Manguier" },
+        { "id": 26, "nom": "Tongolo" },
+        { "id": 27, "nom": "Mballa" },
+        { "id": 28, "nom": "Nkolondom" },
+        { "id": 29, "nom": "Etoudi" },
+        { "id": 30, "nom": "Messassi" },
+        { "id": 31, "nom": "Okolo" },
+        { "id": 32, "nom": "Olembe" },
+        { "id": 33, "nom": "Nyom" },
+        { "id": 34, "nom": "Nkoleton" },
+        { "id": 35, "nom": "Cité Fouda" },
+        { "id": 36, "nom": "Emana" },
+        { "id": 37, "nom": "Obobogo" },
+        { "id": 38, "nom": "Nsam" },
+        { "id": 39, "nom": "Melen" },
+        { "id": 40, "nom": "Efoulan" },
+        { "id": 41, "nom": "Ngoa-Ekele" },
+        { "id": 42, "nom": "Nlong-Mvolye" },
+        { "id": 43, "nom": "Ahala" },
+        { "id": 44, "nom": "Nkolmesseng" },
+        { "id": 45, "nom": "Afanoya" },
+        { "id": 46, "nom": "Nkolfon" },
+        { "id": 47, "nom": "Mekoumbou" },
+        { "id": 48, "nom": "Ntouessong" },
+        { "id": 49, "nom": "Nsimeyong" },
+        { "id": 50, "nom": "Olezoa" },
+        { "id": 51, "nom": "Dakar" },
+        { "id": 52, "nom": "Ndamvout" },
+        { "id": 53, "nom": "Messame-Ndongo" },
+        { "id": 54, "nom": "Odza" },
+        { "id": 55, "nom": "Ekoumdoum" },
+        { "id": 56, "nom": "Awae" },
+        { "id": 57, "nom": "Nkomo" },
+        { "id": 58, "nom": "Kondengui" },
+        { "id": 59, "nom": "Mvog-Mbi" },
+        { "id": 60, "nom": "Nkol-Ndongo" },
+        { "id": 61, "nom": "Mebandan" },
+        { "id": 62, "nom": "Ekie" },
+        { "id": 63, "nom": "Emombo" },
+        { "id": 64, "nom": "Ntui-Essong" },
+        { "id": 65, "nom": "Nkolo" },
+        { "id": 66, "nom": "Abom" },
+        { "id": 67, "nom": "Mvog-Ada" },
+        { "id": 68, "nom": "Nkol-Messing" },
+        { "id": 69, "nom": "Nkol-Ebogo" },
+        { "id": 70, "nom": "Mfandena" },
+        { "id": 71, "nom": "Ngoulmekong" },
+        { "id": 72, "nom": "Mvog-Betsi" },
+        { "id": 73, "nom": "Simbock" },
+        { "id": 74, "nom": "Elig-Effa" },
+        { "id": 75, "nom": "Nkolbikok" },
+        { "id": 76, "nom": "Etetak" },
+        { "id": 77, "nom": "Minkoameyos" },
+        { "id": 78, "nom": "Nkolso" },
+        { "id": 79, "nom": "Nkol-Mbelé" },
+        { "id": 80, "nom": "Essazam" }
+      ]
+    },
+    {
+      "id": 2,
+      "nom": "Douala",
+      "region": "Littoral",
+      "quartiers": [
+        { "id": 81, "nom": "Akwa" },
+        { "id": 82, "nom": "Bonanjo" },
+        { "id": 83, "nom": "Bonapriso" },
+        { "id": 84, "nom": "Bonabéri" },
+        { "id": 85, "nom": "Deïdo" },
+        { "id": 86, "nom": "New Bell" },
+        { "id": 87, "nom": "New Deïdo" },
+        { "id": 88, "nom": "Ndokoti" },
+        { "id": 89, "nom": "Bassa" },
+        { "id": 90, "nom": "Logbaba" },
+        { "id": 91, "nom": "Makepe" },
+        { "id": 92, "nom": "Bonamoussadi" },
+        { "id": 93, "nom": "Kotto" },
+        { "id": 94, "nom": "Bonassama" },
+        { "id": 95, "nom": "Yassa" },
+        { "id": 96, "nom": "PK14" },
+        { "id": 97, "nom": "PK8" },
+        { "id": 98, "nom": "Bépanda" },
+        { "id": 99, "nom": "Bali" },
+        { "id": 100, "nom": "Logpom" },
+        { "id": 101, "nom": "Bonamatoumbe" },
+        { "id": 102, "nom": "Bonanloka" },
+        { "id": 103, "nom": "Bonendale I" },
+        { "id": 104, "nom": "Bonendale II" },
+        { "id": 105, "nom": "Coconut" },
+        { "id": 106, "nom": "Dahomey" },
+        { "id": 107, "nom": "Djebale I" },
+        { "id": 108, "nom": "Djebale II" },
+        { "id": 109, "nom": "Domgo" },
+        { "id": 110, "nom": "Bonamouti" },
+        { "id": 111, "nom": "Bonangando" },
+        { "id": 112, "nom": "Bodjongo" },
+        { "id": 113, "nom": "Ngodi Bakoko" },
+        { "id": 114, "nom": "Mbanga Bakoko" },
+        { "id": 115, "nom": "Babimbi" },
+        { "id": 116, "nom": "Cité des Palmiers" },
+        { "id": 117, "nom": "Logbessou" },
+        { "id": 118, "nom": "Japoma" },
+        { "id": 119, "nom": "Lendi" },
+        { "id": 120, "nom": "Ndogpassi" },
+        { "id": 121, "nom": "Oyack" },
+        { "id": 122, "nom": "Dibom" },
+        { "id": 123, "nom": "Nkomba" },
+        { "id": 124, "nom": "Besseke" },
+        { "id": 125, "nom": "Bonadimoto" },
+        { "id": 126, "nom": "Sodikombo" },
+        { "id": 127, "nom": "Pindo" },
+        { "id": 128, "nom": "Malanguè" },
+        { "id": 129, "nom": "Beedi" },
+        { "id": 130, "nom": "Ngangue" },
+        { "id": 131, "nom": "Nkolbong" }
+      ]
+    },
+    {
+      "id": 3,
+      "nom": "Bafoussam",
+      "region": "Ouest",
+      "quartiers": [
+        { "id": 132, "nom": "Centre-ville" },
+        { "id": 133, "nom": "Djeleng" },
+        { "id": 134, "nom": "Kamkop" },
+        { "id": 135, "nom": "Tamdja" },
+        { "id": 136, "nom": "Baleng" },
+        { "id": 137, "nom": "Bamougoum" },
+        { "id": 138, "nom": "Sans-Fil" },
+        { "id": 139, "nom": "Tougang" },
+        { "id": 140, "nom": "Banefo" },
+        { "id": 141, "nom": "Famla" },
+        { "id": 142, "nom": "Fokoué" },
+        { "id": 143, "nom": "Fotso" }
+      ]
+    },
+    {
+      "id": 4,
+      "nom": "Bamenda",
+      "region": "Nord-Ouest",
+      "quartiers": [
+        { "id": 144, "nom": "Town" },
+        { "id": 145, "nom": "Commercial Avenue" },
+        { "id": 146, "nom": "Nkwen" },
+        { "id": 147, "nom": "Mankon" },
+        { "id": 148, "nom": "Up Station" },
+        { "id": 149, "nom": "Down Station" },
+        { "id": 150, "nom": "Bambili" },
+        { "id": 151, "nom": "Santa" },
+        { "id": 152, "nom": "Alabakam" },
+        { "id": 153, "nom": "Old Town" },
+        { "id": 154, "nom": "New Layout" },
+        { "id": 155, "nom": "Mile 4" },
+        { "id": 156, "nom": "Mile 6" },
+        { "id": 157, "nom": "Ndzah" }
+      ]
+    },
+    {
+      "id": 5,
+      "nom": "Garoua",
+      "region": "Nord",
+      "quartiers": [
+        { "id": 158, "nom": "Centre-ville" },
+        { "id": 159, "nom": "Djamboutou" },
+        { "id": 160, "nom": "Poumpoumré" },
+        { "id": 161, "nom": "Bibémi" },
+        { "id": 162, "nom": "Yelwa" },
+        { "id": 163, "nom": "Petit Maroc" },
+        { "id": 164, "nom": "Lainde" },
+        { "id": 165, "nom": "Roumde" },
+        { "id": 166, "nom": "Mbaka" }
+      ]
+    },
+    {
+      "id": 6,
+      "nom": "Maroua",
+      "region": "Extrême-Nord",
+      "quartiers": [
+        { "id": 167, "nom": "Centre-ville" },
+        { "id": 168, "nom": "Domayo" },
+        { "id": 169, "nom": "Pitoa" },
+        { "id": 170, "nom": "Kakataré" },
+        { "id": 171, "nom": "Dougoi" },
+        { "id": 172, "nom": "Makabaye" },
+        { "id": 173, "nom": "Zina" },
+        { "id": 174, "nom": "Ouro Badjo" }
+      ]
+    },
+    {
+      "id": 7,
+      "nom": "Ngaoundéré",
+      "region": "Adamaoua",
+      "quartiers": [
+        { "id": 175, "nom": "Centre-ville" },
+        { "id": 176, "nom": "Dang" },
+        { "id": 177, "nom": "Bini" },
+        { "id": 178, "nom": "Baladji" },
+        { "id": 179, "nom": "Gadama Banga" },
+        { "id": 180, "nom": "Ngaouli" },
+        { "id": 181, "nom": "Lainde" }
+      ]
+    },
+    {
+      "id": 8,
+      "nom": "Bertoua",
+      "region": "Est",
+      "quartiers": [
+        { "id": 182, "nom": "Centre-ville" },
+        { "id": 183, "nom": "Mandjou" },
+        { "id": 184, "nom": "Mangué" },
+        { "id": 185, "nom": "Ngankono" },
+        { "id": 186, "nom": "Mboungou" }
+      ]
+    },
+    {
+      "id": 9,
+      "nom": "Ebolowa",
+      "region": "Sud",
+      "quartiers": [
+        { "id": 187, "nom": "Centre-ville" },
+        { "id": 188, "nom": "Nko'ovos" },
+        { "id": 189, "nom": "Abang" },
+        { "id": 190, "nom": "Mvog" },
+        { "id": 191, "nom": "Nkolé" }
+      ]
+    },
+    {
+      "id": 10,
+      "nom": "Kribi",
+      "region": "Sud",
+      "quartiers": [
+        { "id": 192, "nom": "Centre-ville" },
+        { "id": 193, "nom": "Plage" },
+        { "id": 194, "nom": "Lolabé" },
+        { "id": 195, "nom": "Mboamanga" },
+        { "id": 196, "nom": "Mpangou" }
+      ]
+    },
+    {
+      "id": 11,
+      "nom": "Limbe",
+      "region": "Sud-Ouest",
+      "quartiers": [
+        { "id": 197, "nom": "Down Beach" },
+        { "id": 198, "nom": "Bota Land" },
+        { "id": 199, "nom": "Mile 4" },
+        { "id": 200, "nom": "Mile 6" },
+        { "id": 201, "nom": "Mabeta" },
+        { "id": 202, "nom": "Sesse" },
+        { "id": 203, "nom": "Bakebe" }
+      ]
+    },
+    {
+      "id": 12,
+      "nom": "Buea",
+      "region": "Sud-Ouest",
+      "quartiers": [
+        { "id": 204, "nom": "Molyko" },
+        { "id": 205, "nom": "Bokwango" },
+        { "id": 206, "nom": "Great Soppo" },
+        { "id": 207, "nom": "Sandpit" },
+        { "id": 208, "nom": "Bova" },
+        { "id": 209, "nom": "Buea Town" }
+      ]
+    },
+    {
+      "id": 13,
+      "nom": "Edéa",
+      "region": "Littoral",
+      "quartiers": [
+        { "id": 210, "nom": "Centre-ville" },
+        { "id": 211, "nom": "Bango" },
+        { "id": 212, "nom": "Ntoumbé" },
+        { "id": 213, "nom": "Mbanga" }
+      ]
+    },
+    {
+      "id": 14,
+      "nom": "Kumba",
+      "region": "Sud-Ouest",
+      "quartiers": [
+        { "id": 214, "nom": "Centre-ville" },
+        { "id": 215, "nom": "Buea Road" },
+        { "id": 216, "nom": "Kake" },
+        { "id": 217, "nom": "Fiango" }
+      ]
+    },
+    {
+      "id": 15,
+      "nom": "Nkongsamba",
+      "region": "Littoral",
+      "quartiers": [
+        { "id": 218, "nom": "Centre-ville" },
+        { "id": 219, "nom": "Bamenjou" },
+        { "id": 220, "nom": "Bamoun" }
+      ]
+    },
+    {
+      "id": 16,
+      "nom": "Foumban",
+      "region": "Ouest",
+      "quartiers": [
+        { "id": 221, "nom": "Centre-ville" },
+        { "id": 222, "nom": "Kouoptamo" },
+        { "id": 223, "nom": "Mboué" }
+      ]
+    },
+    {
+      "id": 17,
+      "nom": "Dschang",
+      "region": "Ouest",
+      "quartiers": [
+        { "id": 224, "nom": "Centre-ville" },
+        { "id": 225, "nom": "Foreke" },
+        { "id": 226, "nom": "Fongo" }
+      ]
+    },
+    {
+      "id": 18,
+      "nom": "Bangangté",
+      "region": "Ouest",
+      "quartiers": [
+        { "id": 227, "nom": "Centre-ville" },
+        { "id": 228, "nom": "Bangou" },
+        { "id": 229, "nom": "Bamena" }
+      ]
+    },
+    {
+      "id": 19,
+      "nom": "Mbouda",
+      "region": "Ouest",
+      "quartiers": [
+        { "id": 230, "nom": "Centre-ville" },
+        { "id": 231, "nom": "Bamesso" },
+        { "id": 232, "nom": "Balatchi" }
+      ]
+    },
+    {
+      "id": 20,
+      "nom": "Yagoua",
+      "region": "Extrême-Nord",
+      "quartiers": [
+        { "id": 233, "nom": "Centre-ville" },
+        { "id": 234, "nom": "Tchakoy" },
+        { "id": 235, "nom": "Téré" }
+      ]
+    },
+    {
+      "id": 21,
+      "nom": "Mokolo",
+      "region": "Extrême-Nord",
+      "quartiers": [
+        { "id": 236, "nom": "Centre-ville" },
+        { "id": 237, "nom": "Kapsiki" },
+        { "id": 238, "nom": "Podoko" }
+      ]
+    },
+    {
+      "id": 22,
+      "nom": "Tibati",
+      "region": "Adamaoua",
+      "quartiers": [
+        { "id": 239, "nom": "Centre-ville" },
+        { "id": 240, "nom": "Doumba" },
+        { "id": 241, "nom": "Babatou" }
+      ]
+    },
+    {
+      "id": 23,
+      "nom": "Bélabo",
+      "region": "Est",
+      "quartiers": [
+        { "id": 242, "nom": "Centre-ville" },
+        { "id": 243, "nom": "Bétaré" },
+        { "id": 244, "nom": "Kongola" }
+      ]
+    },
+    {
+      "id": 24,
+      "nom": "Batouri",
+      "region": "Est",
+      "quartiers": [
+        { "id": 245, "nom": "Centre-ville" },
+        { "id": 246, "nom": "Ngoura" },
+        { "id": 247, "nom": "Bodomo" }
+      ]
+    },
+    {
+      "id": 25,
+      "nom": "Abong-Mbang",
+      "region": "Est",
+      "quartiers": [
+        { "id": 248, "nom": "Centre-ville" },
+        { "id": 249, "nom": "Mbalé" },
+        { "id": 250, "nom": "Ngbandé" }
+      ]
+    },
+    {
+      "id": 26,
+      "nom": "Akonolinga",
+      "region": "Centre",
+      "quartiers": [
+        { "id": 251, "nom": "Centre-ville" },
+        { "id": 252, "nom": "Ayos" },
+        { "id": 253, "nom": "Mbon" }
+      ]
+    },
+    {
+      "id": 27,
+      "nom": "Mbalmayo",
+      "region": "Centre",
+      "quartiers": [
+        { "id": 254, "nom": "Centre-ville" },
+        { "id": 255, "nom": "Mvog" },
+        { "id": 256, "nom": "Nkolmetyi" }
+      ]
+    },
+    {
+      "id": 28,
+      "nom": "Mfou",
+      "region": "Centre",
+      "quartiers": [
+        { "id": 257, "nom": "Centre-ville" },
+        { "id": 258, "nom": "Mbankolo" },
+        { "id": 259, "nom": "Mimbang" }
+      ]
+    },
+    {
+      "id": 29,
+      "nom": "Nanga-Eboko",
+      "region": "Centre",
+      "quartiers": [
+        { "id": 260, "nom": "Centre-ville" },
+        { "id": 261, "nom": "Eboko" },
+        { "id": 262, "nom": "Mboum" }
+      ]
+    },
+    {
+      "id": 30,
+      "nom": "Obala",
+      "region": "Centre",
+      "quartiers": [
+        { "id": 263, "nom": "Centre-ville" },
+        { "id": 264, "nom": "Mbandjock" },
+        { "id": 265, "nom": "Boko" }
+      ]
+    },
+    {
+      "id": 31,
+      "nom": "Mbandjock",
+      "region": "Centre",
+      "quartiers": [
+        { "id": 266, "nom": "Centre-ville" },
+        { "id": 267, "nom": "Mvam" },
+        { "id": 268, "nom": "Nkol" }
+      ]
+    },
+    {
+      "id": 32,
+      "nom": "Monatélé",
+      "region": "Centre",
+      "quartiers": [
+        { "id": 269, "nom": "Centre-ville" },
+        { "id": 270, "nom": "Ndjolé" },
+        { "id": 271, "nom": "Maka" }
+      ]
+    },
+    {
+      "id": 33,
+      "nom": "Minta",
+      "region": "Centre",
+      "quartiers": [
+        { "id": 272, "nom": "Centre-ville" },
+        { "id": 273, "nom": "Essong" },
+        { "id": 274, "nom": "Mbom" }
+      ]
+    },
+    {
+      "id": 34,
+      "nom": "Nkoteng",
+      "region": "Centre",
+      "quartiers": [
+        { "id": 275, "nom": "Centre-ville" },
+        { "id": 276, "nom": "Mvam" },
+        { "id": 277, "nom": "Nkol" }
+      ]
+    },
+    {
+      "id": 35,
+      "nom": "Kribi",
+      "region": "Sud",
+      "quartiers": [
+        { "id": 278, "nom": "Centre-ville" },
+        { "id": 279, "nom": "Plage" },
+        { "id": 280, "nom": "Lolabé" },
+        { "id": 281, "nom": "Mboamanga" },
+        { "id": 282, "nom": "Mpangou" }
+      ]
+    },
+    {
+      "id": 36,
+      "nom": "Meyomessala",
+      "region": "Sud",
+      "quartiers": [
+        { "id": 283, "nom": "Centre-ville" },
+        { "id": 284, "nom": "Meyo" },
+        { "id": 285, "nom": "Zamakoe" }
+      ]
+    },
+    {
+      "id": 37,
+      "nom": "Mvangane",
+      "region": "Sud",
+      "quartiers": [
+        { "id": 286, "nom": "Centre-ville" },
+        { "id": 287, "nom": "Mvae" },
+        { "id": 288, "nom": "Ngyé" }
+      ]
+    },
+    {
+      "id": 38,
+      "nom": "Niete",
+      "region": "Sud",
+      "quartiers": [
+        { "id": 289, "nom": "Centre-ville" },
+        { "id": 290, "nom": "Mvab" },
+        { "id": 291, "nom": "Nkol" }
+      ]
+    },
+    {
+      "id": 39,
+      "nom": "Olamzé",
+      "region": "Sud",
+      "quartiers": [
+        { "id": 292, "nom": "Centre-ville" },
+        { "id": 293, "nom": "Akongo" },
+        { "id": 294, "nom": "Nkol" }
+      ]
+    },
+    {
+      "id": 40,
+      "nom": "Lolodorf",
+      "region": "Sud",
+      "quartiers": [
+        { "id": 295, "nom": "Centre-ville" },
+        { "id": 296, "nom": "Bikok" },
+        { "id": 297, "nom": "Mvog" }
+      ]
+    },
+    {
+      "id": 41,
+      "nom": "Ngomedzap",
+      "region": "Centre",
+      "quartiers": [
+        { "id": 298, "nom": "Centre-ville" },
+        { "id": 299, "nom": "Mvog" },
+        { "id": 300, "nom": "Nkol" }
+      ]
+    },
+    {
+      "id": 42,
+      "nom": "Mvila",
+      "region": "Sud",
+      "quartiers": [
+        { "id": 301, "nom": "Centre-ville" },
+        { "id": 302, "nom": "Mvog" },
+        { "id": 303, "nom": "Nkol" }
+      ]
+    }
+  ]
+}

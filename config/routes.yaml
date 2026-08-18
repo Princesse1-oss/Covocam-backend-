@@ -1,0 +1,204 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+# Route de login JWT
+api_login_check:
+  path: /api/login
+  methods: ['POST']
+
+# Routes pour les trajets
+api_trajets_search:
+  path: /api/trajets/search
+  controller: App\Controller\TrajetController::search
+  methods: ['GET']
+
+api_trajets_conducteur:
+  path: /api/trajets/conducteur
+  controller: App\Controller\TrajetController::getMesTrajets
+  methods: ['GET']
+
+api_trajets_create:
+  path: /api/trajets
+  controller: App\Controller\TrajetController::create
+  methods: ['POST']
+
+api_trajets_show:
+  path: /api/trajets/{id}
+  controller: App\Controller\TrajetController::show
+  methods: ['GET']
+
+api_trajets_update:
+  path: /api/trajets/{id}
+  controller: App\Controller\TrajetController::update
+  methods: ['PUT']
+
+api_trajets_annuler:
+  path: /api/trajets/{id}/annuler
+  controller: App\Controller\TrajetController::annuler
+  methods: ['POST']
+
+# Routes pour les réservations
+api_reservations_mes_reservations:
+  path: /api/reservations/mes-reservations
+  controller: App\Controller\ReservationController::getMesReservations
+  methods: ['GET']
+
+api_reservations_create:
+  path: /api/reservations
+  controller: App\Controller\ReservationController::create
+  methods: ['POST']
+
+api_reservations_accepter:
+  path: /api/reservations/{id}/accepter
+  controller: App\Controller\ReservationController::accepter
+  methods: ['POST']
+
+api_reservations_refuser:
+  path: /api/reservations/{id}/refuser
+  controller: App\Controller\ReservationController::refuser
+  methods: ['POST']
+
+api_reservations_annuler:
+  path: /api/reservations/{id}/annuler
+  controller: App\Controller\ReservationController::annuler
+  methods: ['POST']
+
+api_reservations_conducteur_mes_reservations:
+  path: /api/reservations/conducteur/mes-reservations
+  controller: App\Controller\ReservationController::getMesReservationsConducteur
+  methods: ['GET']
+
+# Routes pour les véhicules
+api_vehicules_list:
+  path: /api/vehicules
+  controller: App\Controller\VehiculeController::list
+  methods: ['GET']
+
+api_vehicules_create:
+  path: /api/vehicules
+  controller: App\Controller\VehiculeController::create
+  methods: ['POST']
+
+api_vehicules_defaut:
+  path: /api/vehicules/{id}/defaut
+  controller: App\Controller\VehiculeController::setDefault
+  methods: ['PUT']
+
+api_vehicules_delete:
+  path: /api/vehicules/{id}
+  controller: App\Controller\VehiculeController::delete
+  methods: ['DELETE']
+
+# Routes pour les évaluations
+api_evaluations_conducteur:
+  path: /api/evaluations/conducteur
+  controller: App\Controller\EvaluationController::noterConducteur
+  methods: ['POST']
+
+api_evaluations_passager:
+  path: /api/evaluations/passager
+  controller: App\Controller\EvaluationController::noterPassager
+  methods: ['POST']
+
+api_evaluations_recues:
+  path: /api/evaluations/recues
+  controller: App\Controller\EvaluationController::getMesEvaluationsRecues
+  methods: ['GET']
+
+api_evaluations_donnees:
+  path: /api/evaluations/donnees
+  controller: App\Controller\EvaluationController::getMesEvaluationsDonnees
+  methods: ['GET']
+
+# Routes pour les utilisateurs
+api_utilisateurs_show:
+  path: /api/utilisateurs/{id}
+  controller: App\Controller\UtilisateurController::show
+  methods: ['GET']
+
+api_utilisateurs_update:
+  path: /api/utilisateurs/profil
+  controller: App\Controller\UtilisateurController::updateProfile
+  methods: ['PUT']
+
+# Routes admin
+api_admin_stats:
+  path: /api/admin/stats
+  controller: App\Controller\AdminController::getStats
+  methods: ['GET']
+
+api_admin_users:
+  path: /api/admin/utilisateurs
+  controller: App\Controller\AdminController::getUsers
+  methods: ['GET']
+
+api_admin_suspendre:
+  path: /api/admin/utilisateurs/{id}/suspendre
+  controller: App\Controller\AdminController::suspendreUtilisateur
+  methods: ['POST']
+
+api_admin_activer:
+  path: /api/admin/utilisateurs/{id}/activer
+  controller: App\Controller\AdminController::activerUtilisateur
+  methods: ['POST']
+
+api_admin_trajets:
+  path: /api/admin/trajets
+  controller: App\Controller\AdminController::getTrajets
+  methods: ['GET']
+
+# Routes pour les notifications
+api_notifications_list:
+  path: /api/notifications
+  controller: App\Controller\NotificationController::list
+  methods: ['GET']
+
+api_notifications_non_lues:
+  path: /api/notifications/non-lues
+  controller: App\Controller\NotificationController::getNonLues
+  methods: ['GET']
+
+api_notifications_count_non_lues:
+  path: /api/notifications/non-lues/count
+  controller: App\Controller\NotificationController::countNonLues
+  methods: ['GET']
+
+api_notifications_read:
+  path: /api/notifications/{id}/lire
+  controller: App\Controller\NotificationController::marquerCommeLue
+  methods: ['POST']
+
+api_notifications_read_all:
+  path: /api/notifications/lire-tout
+  controller: App\Controller\NotificationController::marquerToutCommeLu
+  methods: ['POST']
+
+api_notifications_delete:
+  path: /api/notifications/{id}
+  controller: App\Controller\NotificationController::delete
+  methods: ['DELETE']
+
+api_notifications_delete_read:
+  path: /api/notifications/lues/supprimer
+  controller: App\Controller\NotificationController::deleteRead
+  methods: ['DELETE']
+
+# Route d'authentification et inscription
+api_register:
+  path: /api/register
+  controller: App\Controller\AuthController::register
+  methods: ['POST']
+
+api_me:
+  path: /api/me
+  controller: App\Controller\AuthController::me
+  methods: ['GET']
+
+# Health check
+# api_health:
+#     path: /api/health
+#     controller: App\Controller\HealthController::index
+#     methods: ['GET']
