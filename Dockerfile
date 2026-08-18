@@ -25,6 +25,25 @@ RUN composer dump-autoload --optimize --no-dev \
     fi \
     && chmod -R 777 var
 
+# Create minimal .env (gitignored, not in repo)
+# Real values come from Render environment variables
+RUN echo 'APP_ENV=prod' > .env \
+    && echo 'APP_SECRET=override-me' >> .env \
+    && echo 'DATABASE_URL=postgresql://localhost/covocam_db' >> .env \
+    && echo 'JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem' >> .env \
+    && echo 'JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem' >> .env \
+    && echo 'JWT_PASSPHRASE=override-me' >> .env \
+    && echo 'CORS_ALLOW_ORIGIN=*' >> .env \
+    && echo 'MAILER_DSN=smtp://localhost' >> .env \
+    && echo 'MAILER_SENDER_EMAIL=noreply@example.com' >> .env \
+    && echo 'CAMPAY_APP_CODE=override-me' >> .env \
+    && echo 'CAMPAY_APP_PASSWORD=override-me' >> .env \
+    && echo 'PAYMENT_MODE=simulation' >> .env \
+    && echo 'PLATFORM_COMMISSION_RATE=0.10' >> .env \
+    && echo 'ADMIN_PHONE=237600000000' >> .env \
+    && echo 'FRONTEND_URL=https://example.com' >> .env \
+    && echo 'TRUSTED_PROXIES=10.0.0.0/8' >> .env
+
 EXPOSE 8000
 
 CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
