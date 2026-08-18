@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'app:envoi-rappels', description: 'Envoie des notifications de rappel pour les réservations du jour')]
-class EnvoiRappelsReservationsCommand extends Command
+class EnvoyerRappelsReservationsCommand extends Command
 {
     // ... (le reste de ton code)
     public function __construct(
