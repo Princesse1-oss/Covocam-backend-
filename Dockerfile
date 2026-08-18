@@ -25,8 +25,6 @@ RUN composer dump-autoload --optimize --no-dev \
     fi \
     && chmod -R 777 var
 
-# Create minimal .env (gitignored, not in repo)
-# Real values come from Render environment variables
 RUN echo 'APP_ENV=prod' > .env \
     && echo 'APP_SECRET=override-me' >> .env \
     && echo 'DATABASE_URL=postgresql://localhost/covocam_db' >> .env \
@@ -44,6 +42,9 @@ RUN echo 'APP_ENV=prod' > .env \
     && echo 'FRONTEND_URL=https://example.com' >> .env \
     && echo 'TRUSTED_PROXIES=10.0.0.0/8' >> .env
 
+COPY docker-start.sh /usr/local/bin/docker-start.sh
+RUN chmod +x /usr/local/bin/docker-start.sh
+
 EXPOSE 8000
 
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+CMD ["docker-start.sh"]
