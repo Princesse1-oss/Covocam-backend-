@@ -50,8 +50,22 @@ class VehiculeController extends AbstractController
         }
     }
 
-          #[Route('', name: 'create', methods: ['POST'])]
+    #[Route('', name: 'create', methods: ['POST'])]
     public function create(
+        Request $request,
+        EntityManagerInterface $em,
+        ValidatorInterface $validator,
+        SluggerInterface $slugger
+    ): JsonResponse {
+        try {
+        return $this->doCreate($request, $em, $validator, $slugger);
+        } catch (\Throwable $e) {
+            error_log("❌ ERREUR CREATE VEHICULE: " . $e->getMessage() . " | " . $e->getTraceAsString());
+            return $this->json(['error' => 'Erreur interne: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private function doCreate(
         Request $request,
         EntityManagerInterface $em,
         ValidatorInterface $validator,
