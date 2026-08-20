@@ -23,7 +23,9 @@ services:
       - key: MAILER_DSN
         sync: false
       - key: MAILER_SENDER_EMAIL
-        sync: false
+        value: noreply@covocam.com
+      - key: FRONTEND_URL
+        value: https://covocam-frontend.vercel.app
       - key: CAMPAY_APP_CODE
         sync: false
       - key: CAMPAY_APP_PASSWORD

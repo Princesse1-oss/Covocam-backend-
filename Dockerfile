@@ -39,13 +39,13 @@ RUN echo 'APP_ENV=prod' > .env \
     && echo 'JWT_PASSPHRASE=' >> .env \
     && echo 'CORS_ALLOW_ORIGIN=*' >> .env \
     && echo 'MAILER_DSN=smtp://localhost' >> .env \
-    && echo 'MAILER_SENDER_EMAIL=noreply@example.com' >> .env \
+    && echo 'MAILER_SENDER_EMAIL=noreply@covocam.com' >> .env \
     && echo 'CAMPAY_APP_CODE=override-me' >> .env \
     && echo 'CAMPAY_APP_PASSWORD=override-me' >> .env \
     && echo 'PAYMENT_MODE=simulation' >> .env \
     && echo 'PLATFORM_COMMISSION_RATE=0.10' >> .env \
     && echo 'ADMIN_PHONE=237600000000' >> .env \
-    && echo 'FRONTEND_URL=https://example.com' >> .env \
+    && echo 'FRONTEND_URL=https://covocam-frontend.vercel.app' >> .env \
     && echo 'TRUSTED_PROXIES=10.0.0.0/8' >> .env \
     && echo 'DEFAULT_URI=http://localhost' >> .env
 
