@@ -571,6 +571,27 @@ class TrajetController extends AbstractController
             }
         }
 
+        $positionVisible = $trajet->isTrajetActive();
+
+        // Si le trajet est terminé, la position reste visible 1h après
+        if ($trajet->getStatut() === 'TERMINE' && $trajet->getDateTermine()) {
+            $now = new \DateTimeImmutable();
+            $oneHourAfter = $trajet->getDateTermine()->modify('+1 hour');
+            if ($now <= $oneHourAfter) {
+                $positionVisible = true;
+            }
+        }
+
+        if (!$positionVisible) {
+            return $this->json([
+                'latitude' => null,
+                'longitude' => null,
+                'statut' => $trajet->getStatut(),
+                'trajetActive' => false,
+                'positionExpiriee' => $trajet->getStatut() === 'TERMINE',
+            ]);
+        }
+
         return $this->json([
             'latitude' => $trajet->getPositionActuelleLat(),
             'longitude' => $trajet->getPositionActuelleLng(),

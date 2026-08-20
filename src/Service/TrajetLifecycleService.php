@@ -59,7 +59,7 @@ class TrajetLifecycleService
      */
     private function transitionAtomique(Trajet $trajet, string $nouveauStatut, array $statutsAutorises, bool $trajetActive = false): bool
     {
-        $affected = $this->em->createQueryBuilder()
+        $qb = $this->em->createQueryBuilder()
             ->update(Trajet::class, 't')
             ->set('t.statut', ':nouveau')
             ->set('t.trajetActive', ':actif')
@@ -70,9 +70,14 @@ class TrajetLifecycleService
             ->setParameter('actif', $trajetActive)
             ->setParameter('now', new \DateTimeImmutable())
             ->setParameter('id', $trajet->getId())
-            ->setParameter('autorises', $statutsAutorises)
-            ->getQuery()
-            ->execute();
+            ->setParameter('autorises', $statutsAutorises);
+
+        if ($nouveauStatut === self::STATUT_TERMINE) {
+            $qb->set('t.dateTermine', ':dateTermine')
+               ->setParameter('dateTermine', new \DateTimeImmutable());
+        }
+
+        $affected = $qb->getQuery()->execute();
 
         if ($affected === 1) {
             $this->em->refresh($trajet);

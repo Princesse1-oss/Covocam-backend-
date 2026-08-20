@@ -88,6 +88,9 @@ class Trajet
     #[ORM\Column(type: 'time', nullable: true)]
     private ?\DateTimeInterface $heureArriveeEstimee = null;
 
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $dateTermine = null;
+
     // ==========================================
     // RELATIONS
     // ==========================================
@@ -265,4 +268,7 @@ class Trajet
 
     public function getHeureArriveeEstimee(): ?\DateTimeInterface { return $this->heureArriveeEstimee; }
     public function setHeureArriveeEstimee(?\DateTimeInterface $heureArriveeEstimee): static { $this->heureArriveeEstimee = $heureArriveeEstimee; return $this; }
+
+    public function getDateTermine(): ?\DateTimeImmutable { return $this->dateTermine; }
+    public function setDateTermine(?\DateTimeImmutable $dateTermine): static { $this->dateTermine = $dateTermine; return $this; }
 }
