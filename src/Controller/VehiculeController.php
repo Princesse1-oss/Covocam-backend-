@@ -30,19 +30,24 @@ class VehiculeController extends AbstractController
     #[Route('', name: 'get', methods: ['GET'])]
     public function getVehicule(): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) return $this->json(['error' => 'Non authentifié'], Response::HTTP_UNAUTHORIZED);
+        try {
+            $user = $this->getUser();
+            if (!$user) return $this->json(['error' => 'Non authentifié'], Response::HTTP_UNAUTHORIZED);
 
-        $vehicule = $this->getVehiculeUtilisateur($user);
+            $vehicule = $this->getVehiculeUtilisateur($user);
 
-        if (!$vehicule) {
+            if (!$vehicule) {
+                return $this->json(['hasVehicule' => false, 'vehicule' => null]);
+            }
+
+            return $this->json([
+                'hasVehicule' => true,
+                'vehicule' => $this->formatVehicule($vehicule)
+            ]);
+        } catch (\Throwable $e) {
+            error_log("❌ ERREUR GET vehicule: " . $e->getMessage());
             return $this->json(['hasVehicule' => false, 'vehicule' => null]);
         }
-
-        return $this->json([
-            'hasVehicule' => true,
-            'vehicule' => $this->formatVehicule($vehicule)
-        ]);
     }
 
           #[Route('', name: 'create', methods: ['POST'])]
