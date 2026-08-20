@@ -17,7 +17,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-autoloader
+RUN for i in 1 2 3; do composer install --no-dev --optimize-autoloader --no-scripts --no-autoloader && break || echo "Attempt $i failed, retrying..." && sleep 10; done
 
 ARG CACHEBUST
 RUN echo "Cache bust at ${CACHEBUST:-now}" > /tmp/bust
