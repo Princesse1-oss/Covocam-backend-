@@ -91,6 +91,25 @@ class AdminController extends AbstractController
         return $this->json($result);
     }
 
+    #[Route('/utilisateurs/{id}', name: 'delete_user', methods: ['DELETE'])]
+    public function deleteUser(int $id, UtilisateurRepository $utilisateurRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $admin = $this->getUser();
+        if (!$admin || !in_array('ROLE_ADMIN', $admin->getRoles())) {
+            return $this->json(['error' => 'Accès non autorisé'], Response::HTTP_FORBIDDEN);
+        }
+        $utilisateur = $utilisateurRepository->find($id);
+        if (!$utilisateur) {
+            return $this->json(['error' => 'Utilisateur non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+        if (in_array('ROLE_ADMIN', $utilisateur->getRoles())) {
+            return $this->json(['error' => 'Impossible de supprimer un administrateur'], Response::HTTP_BAD_REQUEST);
+        }
+        $entityManager->remove($utilisateur);
+        $entityManager->flush();
+        return $this->json(['message' => 'Utilisateur supprimé avec succès']);
+    }
+
     #[Route('/utilisateurs/{id}/suspendre', name: 'suspendre', methods: ['POST'])]
     public function suspendreUtilisateur(
         int $id,
