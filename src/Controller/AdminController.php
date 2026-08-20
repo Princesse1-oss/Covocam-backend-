@@ -110,6 +110,38 @@ class AdminController extends AbstractController
         return $this->json(['message' => 'Utilisateur supprimé avec succès']);
     }
 
+    #[Route('/utilisateurs/{id}', name: 'update_user', methods: ['PUT'])]
+    public function updateUser(
+        int $id,
+        Request $request,
+        UtilisateurRepository $utilisateurRepository,
+        EntityManagerInterface $entityManager,
+        \Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface $passwordHasher
+    ): JsonResponse {
+        $admin = $this->getUser();
+        if (!$admin || !in_array('ROLE_ADMIN', $admin->getRoles())) {
+            return $this->json(['error' => 'Accès non autorisé'], Response::HTTP_FORBIDDEN);
+        }
+        $utilisateur = $utilisateurRepository->find($id);
+        if (!$utilisateur) {
+            return $this->json(['error' => 'Utilisateur non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+        $data = json_decode($request->getContent(), true);
+        if (isset($data['nom'])) $utilisateur->setNom($data['nom']);
+        if (isset($data['prenom'])) $utilisateur->setPrenom($data['prenom']);
+        if (isset($data['email'])) $utilisateur->setEmail($data['email']);
+        if (isset($data['telephone'])) $utilisateur->setTelephone($data['telephone']);
+        if (isset($data['typeUtilisateur'])) $utilisateur->setTypeUtilisateur($data['typeUtilisateur']);
+        if (isset($data['motDePasse'])) {
+            $hashed = $passwordHasher->hashPassword($utilisateur, $data['motDePasse']);
+            $utilisateur->setMotDePasse($hashed);
+        }
+        if (isset($data['estActif'])) $utilisateur->setEstActif($data['estActif']);
+        if (isset($data['roles'])) $utilisateur->setRoles($data['roles']);
+        $entityManager->flush();
+        return $this->json(['message' => 'Utilisateur mis à jour', 'id' => $utilisateur->getId()]);
+    }
+
     #[Route('/utilisateurs/{id}/suspendre', name: 'suspendre', methods: ['POST'])]
     public function suspendreUtilisateur(
         int $id,
