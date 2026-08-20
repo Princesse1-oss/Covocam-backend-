@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Paiement;
 use App\Entity\Reservation;
 use App\Entity\Notification;
 use App\Entity\Evaluation;
@@ -347,6 +348,20 @@ class ReservationController extends AbstractController
 
         $reservation->setStatut('CONFIRMEE');
         $trajet = $reservation->getTrajet();
+
+        $montantTotal = $reservation->getPrixTotal();
+        $commission = round($montantTotal * 0.10, 0);
+        $montantNet = $montantTotal - $commission;
+
+        $paiement = new Paiement();
+        $paiement->setReservation($reservation);
+        $paiement->setCampayReference('SIM-' . uniqid());
+        $paiement->setMontantTotal($montantTotal);
+        $paiement->setCommission($commission);
+        $paiement->setMontantNetConducteur($montantNet);
+        $paiement->setStatut('REUSSI');
+        $paiement->setDatePaiement(new \DateTimeImmutable());
+        $entityManager->persist($paiement);
 
         // Notification au conducteur
         $conducteur = $trajet->getConducteur();

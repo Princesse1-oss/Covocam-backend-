@@ -48,7 +48,7 @@ class AdminController extends AbstractController
             'reservations' => [
                 'total' => $reservationRepository->count([]),
                 'en_attente' => $reservationRepository->count(['statut' => 'EN_ATTENTE']),
-                'acceptees' => $reservationRepository->count(['statut' => 'A_PAYER']),
+                'acceptees' => $reservationRepository->count(['statut' => 'CONFIRMEE']) + $reservationRepository->count(['statut' => 'A_PAYER']),
                 'refusees' => $reservationRepository->count(['statut' => 'REFUSEE']),
                 'annulees' => $reservationRepository->count(['statut' => 'ANNULEE'])
             ],
