@@ -19,6 +19,7 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-scripts --no-autoloader
 
+ARG BUILD_DATE=""
 COPY . .
 
 RUN composer dump-autoload --optimize --no-dev \

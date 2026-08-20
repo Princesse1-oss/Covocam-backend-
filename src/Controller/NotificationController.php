@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/api/notifications', name: 'api_notifications_')]
 class NotificationController extends AbstractController
 {
     // 1. Mes notifications
