@@ -37,6 +37,8 @@ class EmailService
         try {
             $this->mailer->send($email);
         } catch (\Exception $e) {
+            error_log("❌ Erreur envoi email suspension: " . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -58,6 +60,8 @@ class EmailService
         try {
             $this->mailer->send($email);
         } catch (\Exception $e) {
+            error_log("❌ Erreur envoi email réactivation: " . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -81,6 +85,8 @@ class EmailService
         try {
             $this->mailer->send($email);
         } catch (\Exception $e) {
+            error_log("❌ Erreur envoi email suspension conducteur: " . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -102,6 +108,8 @@ class EmailService
         try {
             $this->mailer->send($email);
         } catch (\Exception $e) {
+            error_log("❌ Erreur envoi email réactivation conducteur: " . $e->getMessage());
+            throw $e;
         }
     }
 }
