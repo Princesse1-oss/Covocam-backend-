@@ -33,7 +33,7 @@ class Vehicule
 
     #[ORM\Column]
     #[Assert\NotBlank(message: 'L\'année est obligatoire')]
-    #[Assert\Range(min: 1990, max: 2100, minMessage: 'L\'année doit être au minimum 1990', maxMessage: 'L\'année ne peut pas dépasser 2100')]
+    #[Assert\Range(min: 1990, max: 2100, notInRangeMessage: 'L\'année doit être entre 1990 et 2100')]
     private ?int $annee = null;
 
     #[ORM\Column(length: 30)]
@@ -48,7 +48,7 @@ class Vehicule
 
     #[ORM\Column]
     #[Assert\NotBlank(message: 'Le nombre de places est obligatoire')]
-    #[Assert\Range(min: 1, max: 8, minMessage: 'Le véhicule doit avoir au minimum 1 place', maxMessage: 'Le véhicule ne peut pas avoir plus de 8 places')]
+    #[Assert\Range(min: 1, max: 8, notInRangeMessage: 'Le véhicule doit avoir entre 1 et 8 places')]
     private ?int $places = null;
 
     #[ORM\Column(length: 20, nullable: true)]

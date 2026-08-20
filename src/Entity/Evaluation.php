@@ -17,7 +17,7 @@ class Evaluation
 
     #[ORM\Column]
     #[Assert\NotBlank(message: 'La note est obligatoire')]
-    #[Assert\Range(min: 1, max: 5, minMessage: 'La note doit être au minimum de 1', maxMessage: 'La note ne peut pas dépasser 5')]
+    #[Assert\Range(min: 1, max: 5, notInRangeMessage: 'La note doit être entre 1 et 5')]
     private ?int $note = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
