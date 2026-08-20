@@ -1,12 +1,8 @@
 #!/bin/bash
 set -e
 
-echo "=== Resetting database ==="
-php bin/console dbal:run-sql "DROP SCHEMA IF EXISTS public CASCADE" 2>/dev/null || true
-php bin/console dbal:run-sql "CREATE SCHEMA public" 2>/dev/null || true
-
-echo "=== Creating schema from entities ==="
-php bin/console doctrine:schema:create --force --no-interaction 2>/dev/null || php bin/console doctrine:schema:create 2>/dev/null || echo "Schema create failed"
+echo "=== Updating schema from entities ==="
+php bin/console doctrine:schema:update --force --no-interaction 2>/dev/null || php bin/console doctrine:schema:create 2>/dev/null || echo "Schema update failed"
 
 echo "=== Seeding admin user ==="
 php bin/console app:create-user 2>/dev/null || echo "Admin already exists or creation failed"

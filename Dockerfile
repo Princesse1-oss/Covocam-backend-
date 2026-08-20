@@ -19,7 +19,8 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-scripts --no-autoloader
 
-ARG BUILD_DATE=""
+ARG CACHEBUST
+RUN echo "Cache bust at ${CACHEBUST:-now}" > /tmp/bust
 COPY . .
 
 RUN composer dump-autoload --optimize --no-dev \
