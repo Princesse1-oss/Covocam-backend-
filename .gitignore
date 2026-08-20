@@ -12,5 +12,5 @@
 ###< symfony/framework-bundle ###
 
 ###> lexik/jwt-authentication-bundle ###
-/config/jwt/*.pem
+# JWT keys committed to persist across Render deploys
 ###< lexik/jwt-authentication-bundle ###
