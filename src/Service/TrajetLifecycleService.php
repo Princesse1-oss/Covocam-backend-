@@ -211,7 +211,7 @@ class TrajetLifecycleService
             }
 
             // Expiration : départ dépassé de +24h sans démarrage → ANNULE
-            if ($maintenant > clone $datetimeDepart->modify('+24 hours')) {
+            if ($maintenant > (clone $datetimeDepart)->modify('+24 hours')) {
                 $this->annuler($trajet);
                 return;
             }
