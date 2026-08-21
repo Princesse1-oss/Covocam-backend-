@@ -440,18 +440,26 @@ class AdminController extends AbstractController
     }
 
     #[Route('/stats-paiements', name: 'stats_paiements', methods: ['GET'])]
-    public function getStatsPaiements(EntityManagerInterface $entityManager): JsonResponse
+    public function getStatsPaiements(EntityManagerInterface $entityManager, Request $request): JsonResponse
     {
         $user = $this->getUser();
         if (!$user || !in_array('ROLE_ADMIN', $user->getRoles())) {
             return $this->json(['error' => 'Accès non autorisé'], Response::HTTP_FORBIDDEN);
         }
 
+        $days = (int) $request->query->get('days', 0);
+
         try {
             $qb = $entityManager->createQueryBuilder();
             $qb->select('p.statut, COUNT(p.id) as count')
                ->from(\App\Entity\Paiement::class, 'p')
                ->groupBy('p.statut');
+
+            if ($days > 0) {
+                $since = new \DateTimeImmutable("-{$days} days");
+                $qb->andWhere('p.datePaiement >= :since')
+                   ->setParameter('since', $since);
+            }
             
             $results = $qb->getQuery()->getResult();
             
