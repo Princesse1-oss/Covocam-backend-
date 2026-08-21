@@ -177,6 +177,16 @@ class VehiculeController extends AbstractController
             $vehicule->setPhotoArriere($this->uploadPhoto($photoArriere, 'arriere', $user->getId(), $uploadDir, $slugger));
         }
 
+        $photoInterieur = $request->files->get('photoInterieur');
+        if ($photoInterieur && method_exists($vehicule, 'setPhotoInterieur')) {
+            $vehicule->setPhotoInterieur($this->uploadPhoto($photoInterieur, 'interieur', $user->getId(), $uploadDir, $slugger));
+        }
+
+        $photoCoffre = $request->files->get('photoCoffre');
+        if ($photoCoffre && method_exists($vehicule, 'setPhotoCoffre')) {
+            $vehicule->setPhotoCoffre($this->uploadPhoto($photoCoffre, 'coffre', $user->getId(), $uploadDir, $slugger));
+        }
+
         $errors = $validator->validate($vehicule);
         if (count($errors) > 0) {
             $msgs = [];
@@ -243,6 +253,16 @@ class VehiculeController extends AbstractController
             $vehicule->setPhotoArriere($this->uploadPhoto($photoArriere, 'arriere', $user->getId(), $uploadDir, $slugger));
         }
 
+        $photoInterieur = $request->files->get('photoInterieur');
+        if ($photoInterieur && method_exists($vehicule, 'setPhotoInterieur')) {
+            $vehicule->setPhotoInterieur($this->uploadPhoto($photoInterieur, 'interieur', $user->getId(), $uploadDir, $slugger));
+        }
+
+        $photoCoffre = $request->files->get('photoCoffre');
+        if ($photoCoffre && method_exists($vehicule, 'setPhotoCoffre')) {
+            $vehicule->setPhotoCoffre($this->uploadPhoto($photoCoffre, 'coffre', $user->getId(), $uploadDir, $slugger));
+        }
+
         $em->flush();
 
         return $this->json(['message' => 'Véhicule mis à jour avec succès', 'vehicule' => $this->formatVehicule($vehicule)]);
@@ -288,6 +308,8 @@ class VehiculeController extends AbstractController
         if (method_exists($v, 'getPhotoAvant')) $data['photo'] = $v->getPhotoAvant();
         if (method_exists($v, 'getPhotoAvant')) $data['photoAvant'] = $v->getPhotoAvant();
         if (method_exists($v, 'getPhotoArriere')) $data['photoArriere'] = $v->getPhotoArriere();
+        if (method_exists($v, 'getPhotoInterieur')) $data['photoInterieur'] = $v->getPhotoInterieur();
+        if (method_exists($v, 'getPhotoCoffre')) $data['photoCoffre'] = $v->getPhotoCoffre();
         if (method_exists($v, 'getAnnee')) $data['annee'] = $v->getAnnee();
         if (method_exists($v, 'getCarburant')) $data['carburant'] = $v->getCarburant();
         if (method_exists($v, 'getBoiteVitesse')) $data['boiteVitesse'] = $v->getBoiteVitesse();
