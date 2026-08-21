@@ -490,6 +490,49 @@ class AdminController extends AbstractController
         }
     }
 
+    #[Route('/paiements/all', name: 'paiements_all', methods: ['GET'])]
+    public function getAllPaiements(EntityManagerInterface $entityManager, Request $request): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user || !in_array('ROLE_ADMIN', $user->getRoles())) {
+            return $this->json(['error' => 'Accès non autorisé'], Response::HTTP_FORBIDDEN);
+        }
+
+        $days = (int) $request->query->get('days', 0);
+
+        try {
+            $qb = $entityManager->createQueryBuilder();
+            $qb->select('p')
+               ->from(\App\Entity\Paiement::class, 'p')
+               ->orderBy('p.datePaiement', 'ASC');
+
+            if ($days > 0) {
+                $since = new \DateTimeImmutable("-{$days} days");
+                $qb->andWhere('p.datePaiement >= :since')
+                   ->setParameter('since', $since);
+            }
+
+            $paiements = $qb->getQuery()->getResult();
+
+            $data = [];
+            foreach ($paiements as $p) {
+                $date = $p->getDatePaiement() ?? $p->getDateCreation();
+                $data[] = [
+                    'id' => $p->getId(),
+                    'montant' => $p->getMontantTotal(),
+                    'commission' => $p->getCommission(),
+                    'statut' => $p->getStatut(),
+                    'date' => $date?->format('Y-m-d'),
+                    'devise' => $p->getDevise(),
+                ];
+            }
+
+            return $this->json($data);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     #[Route('/positions', name: 'positions', methods: ['GET'])]
     public function getPositions(EntityManagerInterface $em): JsonResponse
     {
