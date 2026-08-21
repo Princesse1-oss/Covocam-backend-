@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Trajet;
+use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -42,10 +43,12 @@ class TrajetLifecycleService
     ];
 
     private EntityManagerInterface $em;
+    private NotificationService $notifService;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, NotificationService $notifService)
     {
         $this->em = $em;
+        $this->notifService = $notifService;
     }
 
     public function estReservable(Trajet $trajet): bool
@@ -186,5 +189,145 @@ class TrajetLifecycleService
         }
 
         return false;
+    }
+
+    /**
+     * Évaluation paresseuse de toutes les transitions basées sur le temps.
+     * À appeler à la lecture d'un trajet ou d'une liste de trajets.
+     *
+     * OUVERT/COMPLET → EN_ATTENTE_DEPART  (départ dans ≤30 min)
+     * EN_ATTENTE_DEPART → EN_COURS         (heure de départ atteinte)
+     * EN_COURS → EN_ATTENTE_VALIDATION     (heure d'arrivée atteinte)
+     */
+    public function evaluerTransitions(Trajet $trajet): void
+    {
+        $statut = $trajet->getStatut();
+        $maintenant = new \DateTime();
+
+        if (in_array($statut, [self::STATUT_OUVERT, self::STATUT_COMPLET, self::STATUT_EN_ATTENTE_DEPART], true)) {
+            $datetimeDepart = $this->calculerDatetimeDepart($trajet);
+            if ($datetimeDepart === null) {
+                return;
+            }
+
+            // Expiration : départ dépassé de +24h sans démarrage → ANNULE
+            if ($maintenant > clone $datetimeDepart->modify('+24 hours')) {
+                $this->annuler($trajet);
+                return;
+            }
+
+            // OUVERT/COMPLET → EN_ATTENTE_DEPART (départ dans ≤30 min)
+            if (in_array($statut, [self::STATUT_OUVERT, self::STATUT_COMPLET], true)) {
+                $limite30min = (clone $datetimeDepart)->modify('-30 minutes');
+                if ($maintenant >= $limite30min) {
+                    $this->passerEnAttenteDepart($trajet);
+                    $this->envoyerNotification(
+                        $trajet->getConducteur(),
+                        'Rappel de départ',
+                        'Votre trajet ' . $trajet->getVilleDepart() . ' → ' . $trajet->getVilleArrivee() . ' commence dans 30 minutes.',
+                        'rappel_depart_30min',
+                        $trajet
+                    );
+                    $this->notifierPassagersConfirme($trajet, 'Rappel de trajet', 'Votre trajet commence dans 30 minutes.', 'rappel_depart_30min');
+                    return;
+                }
+            }
+
+            // EN_ATTENTE_DEPART → EN_COURS (heure de départ atteinte)
+            if ($statut === self::STATUT_EN_ATTENTE_DEPART && $maintenant >= $datetimeDepart) {
+                $this->demarrer($trajet);
+                $this->envoyerNotification(
+                    $trajet->getConducteur(),
+                    'Trajet démarré',
+                    'Votre trajet ' . $trajet->getVilleDepart() . ' → ' . $trajet->getVilleArrivee() . ' est en cours.',
+                    'trajet_demarre',
+                    $trajet
+                );
+                $this->notifierPassagersConfirme($trajet, 'Trajet en cours', 'Votre conducteur a démarré le trajet.', 'trajet_demarre');
+                return;
+            }
+        }
+
+        // EN_COURS → EN_ATTENTE_VALIDATION (heure d'arrivée atteinte)
+        if ($statut === self::STATUT_EN_COURS) {
+            $datetimeArrivee = $this->calculerDatetimeArrivee($trajet);
+            if ($datetimeArrivee !== null && $maintenant >= $datetimeArrivee) {
+                $this->arriver($trajet);
+                $this->envoyerNotification(
+                    $trajet->getConducteur(),
+                    'Arrivée à destination',
+                    'Vous êtes arrivé à ' . $trajet->getVilleArrivee() . '. Validez les présences des passagers.',
+                    'arrivee_destination',
+                    $trajet
+                );
+                $this->notifierPassagersConfirme($trajet, 'Arrivée à destination', 'Le trajet est terminé. En attente de validation.', 'arrivee_destination');
+            }
+        }
+    }
+
+    private function calculerDatetimeDepart(Trajet $trajet): ?\DateTime
+    {
+        $dateDepart = $trajet->getDateDepart();
+        $heureDepart = $trajet->getHeureDepart();
+        if ($dateDepart === null || $heureDepart === null) {
+            return null;
+        }
+        $heure = explode(':', $heureDepart->format('H:i'));
+        $dt = (new \DateTime($dateDepart->format('Y-m-d')));
+        $dt->setTime((int)$heure[0], (int)($heure[1] ?? 0));
+        return $dt;
+    }
+
+    private function calculerDatetimeArrivee(Trajet $trajet): ?\DateTime
+    {
+        $dateDepart = $trajet->getDateDepart();
+        $heureArrivee = $trajet->getHeureArriveeEstimee();
+        if ($dateDepart === null) {
+            return null;
+        }
+        if ($heureArrivee !== null) {
+            $heure = explode(':', $heureArrivee->format('H:i'));
+            $dt = (new \DateTime($dateDepart->format('Y-m-d')));
+            $dt->setTime((int)$heure[0], (int)($heure[1] ?? 0));
+            // Si l'heure d'arrivée est avant l'heure de départ, c'est le lendemain
+            $datetimeDepart = $this->calculerDatetimeDepart($trajet);
+            if ($datetimeDepart !== null && $dt < $datetimeDepart) {
+                $dt->modify('+1 day');
+            }
+            return $dt;
+        }
+        // Fallback : départ + 2 heures
+        $datetimeDepart = $this->calculerDatetimeDepart($trajet);
+        if ($datetimeDepart !== null) {
+            return $datetimeDepart->modify('+2 hours');
+        }
+        return null;
+    }
+
+    private function envoyerNotification(Utilisateur $destinataire, string $titre, string $message, string $type, Trajet $trajet): void
+    {
+        if ($destinataire === null) {
+            return;
+        }
+        $existing = $this->em->getRepository('App:Notification')->findOneBy([
+            'destinataire' => $destinataire,
+            'type' => $type,
+            'trajet' => $trajet,
+        ]);
+        if ($existing === null) {
+            $this->notifService->notifier($destinataire, $titre, $message, $type, $trajet);
+        }
+    }
+
+    private function notifierPassagersConfirme(Trajet $trajet, string $titre, string $message, string $type): void
+    {
+        foreach ($trajet->getReservations() as $reservation) {
+            if ($reservation->getStatut() === 'CONFIRMEE') {
+                $passager = $reservation->getPassager();
+                if ($passager !== null) {
+                    $this->envoyerNotification($passager, $titre, $message, $type, $trajet);
+                }
+            }
+        }
     }
 }

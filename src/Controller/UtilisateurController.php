@@ -170,4 +170,38 @@ class UtilisateurController extends AbstractController
 
         return $this->json(['count' => (int)$count]);
     }
+
+    // 6. Liste des conducteurs actifs (Pour les demandes privées)
+    #[Route('/conducteurs/actifs', name: 'conducteurs_actifs', methods: ['GET'])]
+    public function getActiveConducteurs(UtilisateurRepository $utilisateurRepository): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'Non authentifié'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $conducteurs = $utilisateurRepository->createQueryBuilder('u')
+            ->where('u.typeUtilisateur IN (:types)')
+            ->andWhere('u.estActif = :actif')
+            ->setParameter('types', ['conducteur', 'les_deux'])
+            ->setParameter('actif', true)
+            ->orderBy('u.prenom', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $result = [];
+        foreach ($conducteurs as $c) {
+            if ($c->getId() === $user->getId()) continue;
+            $result[] = [
+                'id' => $c->getId(),
+                'nom' => $c->getNom(),
+                'prenom' => $c->getPrenom(),
+                'email' => $c->getEmail(),
+                'photo' => $c->getPhoto(),
+                'noteMoyenne' => $c->getNoteMoyenne(),
+            ];
+        }
+
+        return $this->json($result);
+    }
 }

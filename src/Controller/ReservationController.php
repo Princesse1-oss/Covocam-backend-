@@ -8,6 +8,7 @@ use App\Entity\Notification;
 use App\Entity\Evaluation;
 use App\Repository\ReservationRepository;
 use App\Repository\TrajetRepository;
+use App\Service\TrajetLifecycleService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,7 +21,7 @@ class ReservationController extends AbstractController
 {
     // ✅ MÉTHODE RÉÉCRITE EN ORM PUR (plus de SQL brut fragile)
     #[Route('/mes-reservations', name: 'mes_reservations', methods: ['GET'])]
-    public function getMesReservations(EntityManagerInterface $em): JsonResponse
+    public function getMesReservations(EntityManagerInterface $em, TrajetLifecycleService $lifecycle): JsonResponse
     {
         try {
             $user = $this->getUser();
@@ -42,6 +43,9 @@ class ReservationController extends AbstractController
             $formattedResults = [];
             foreach ($reservations as $r) {
                 $trajet = $r->getTrajet();
+                if ($trajet) {
+                    $lifecycle->evaluerTransitions($trajet);
+                }
                 $conducteur = $trajet ? $trajet->getConducteur() : null;
                 $formattedResults[] = [
                     'id' => $r->getId(),
@@ -332,7 +336,7 @@ class ReservationController extends AbstractController
         $entityManager->flush();
 
         return new JsonResponse(['message' => 'Réservation annulée avec succès.']);
-    }
+    } 
 
     // ✅ PAIEMENT D'UNE RÉSERVATION
     #[Route('/{id}/payer', name: 'payer', methods: ['POST'])]
@@ -377,6 +381,20 @@ class ReservationController extends AbstractController
         $notifConducteur->setUrl('/conducteur/reservations');
         
         $entityManager->persist($notifConducteur);
+
+        // Notification au passager (confirmation de paiement)
+        $notifPassager = new Notification();
+        $notifPassager->setTitre('✅ Paiement confirmé');
+        $notifPassager->setMessage(sprintf('Votre paiement de %s FCFA pour le trajet %s → %s a été confirmé. Votre place est réservée !', number_format($reservation->getPrixTotal(), 0, ',', ' '), $trajet->getVilleDepart(), $trajet->getVilleArrivee()));
+        $notifPassager->setType('paiement_confirme');
+        $notifPassager->setDestinataire($user);
+        $notifPassager->setTrajet($trajet);
+        $notifPassager->setReservation($reservation);
+        $notifPassager->setIcone('✅');
+        $notifPassager->setCouleur('#16a34a');
+        $notifPassager->setUrl('/passager/reservations');
+        $entityManager->persist($notifPassager);
+
         $entityManager->flush();
 
         return new JsonResponse(['message' => 'Paiement réussi ! Votre place est confirmée.']);

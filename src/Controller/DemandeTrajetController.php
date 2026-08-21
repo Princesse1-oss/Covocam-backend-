@@ -95,6 +95,46 @@ class DemandeTrajetController extends AbstractController
         $em->persist($demande);
         $em->flush();
 
+        // Notifier les conducteurs
+        if ($demande->isEstPrivee() && $demande->getDestinatairePrive()) {
+            $this->notificationService->notifier(
+                $demande->getDestinatairePrive(),
+                '📩 Nouvelle demande privée',
+                sprintf('%s %s vous a envoyé une demande privée pour un trajet %s → %s le %s.',
+                    $user->getPrenom(), $user->getNom(),
+                    $demande->getVilleDepart(), $demande->getVilleArrivee(),
+                    $dateDepart->format('d/m/Y')
+                ),
+                'demande_privee',
+                null
+            );
+        } else {
+            $conducteurs = $em->getRepository(Utilisateur::class)->createQueryBuilder('u')
+                ->where('u.typeUtilisateur IN (:types)')
+                ->andWhere('u.estActif = :actif')
+                ->setParameter('types', ['conducteur', 'les_deux'])
+                ->setParameter('actif', true)
+                ->getQuery()
+                ->getResult();
+
+            foreach ($conducteurs as $conducteur) {
+                if ($conducteur->getId() !== $user->getId()) {
+                    $this->notificationService->notifier(
+                        $conducteur,
+                        '📩 Nouvelle demande de trajet',
+                        sprintf('%s %s cherche un trajet %s → %s le %s (budget max: %s FCFA).',
+                            $user->getPrenom(), $user->getNom(),
+                            $demande->getVilleDepart(), $demande->getVilleArrivee(),
+                            $dateDepart->format('d/m/Y'),
+                            number_format($demande->getBudgetMax(), 0, ',', '.')
+                        ),
+                        'demande_publique',
+                        null
+                    );
+                }
+            }
+        }
+
         return $this->json([
             'message' => 'Demande publiée avec succès !',
             'demande' => $this->formatDemande($demande)

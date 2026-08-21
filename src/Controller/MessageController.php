@@ -266,6 +266,40 @@ class MessageController extends AbstractController
         return $this->json(['message' => 'Message supprimé avec succès']);
     }
 
+    // 8. Signaler un message
+    #[Route('/{id}/signaler', name: 'signaler', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function signaler(
+        Message $message,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'Non authentifié'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        if ($message->getDestinataire()->getId() !== $user->getId() && $message->getExpediteur()->getId() !== $user->getId()) {
+            return $this->json(['error' => 'Vous n\'êtes pas autorisé'], Response::HTTP_FORBIDDEN);
+        }
+
+        if ($message->isEstSignale()) {
+            return $this->json(['error' => 'Ce message a déjà été signalé'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $raison = $data['raison'] ?? null;
+
+        $message->setEstSignale(true);
+        $message->setRaisonSignalement($raison);
+        $message->setDateSignalement(new \DateTimeImmutable());
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'Message signalé avec succès. Notre équipe examinera ce signalement.',
+            'data' => $this->formatMessage($message)
+        ]);
+    }
+
     private function formatMessage(Message $message): array
     {
         return [
@@ -275,6 +309,9 @@ class MessageController extends AbstractController
             'estLu' => $message->isEstLu(),
             'dateEnvoi' => $message->getDateEnvoi()?->format('Y-m-d H:i:s'),
             'dateLu' => $message->getDateLu()?->format('Y-m-d H:i:s'),
+            'estSignale' => $message->isEstSignale(),
+            'raisonSignalement' => $message->getRaisonSignalement(),
+            'dateSignalement' => $message->getDateSignalement()?->format('Y-m-d H:i:s'),
             'expediteur' => [
                 'id' => $message->getExpediteur()->getId(),
                 'nom' => $message->getExpediteur()->getNom(),

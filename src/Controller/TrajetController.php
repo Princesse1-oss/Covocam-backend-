@@ -197,8 +197,8 @@ class TrajetController extends AbstractController
 
         $result = [];
         foreach ($qb->getQuery()->getResult() as $trajet) {
-            // Expiration paresseuse (décision 3.10)
-            $lifecycle->revaliderExpiration($trajet);
+            // Transitions paresseuses basées sur le temps
+            $lifecycle->evaluerTransitions($trajet);
             $result[] = $this->formatTrajet($trajet);
         }
 
@@ -209,7 +209,7 @@ class TrajetController extends AbstractController
     // 4. Consulter les trajets d'un conducteur
     // =========================================================================
     #[Route('/conducteur/trajets', name: 'conducteur_list', methods: ['GET'])]
-    public function getMesTrajets(TrajetRepository $trajetRepository): JsonResponse
+    public function getMesTrajets(TrajetRepository $trajetRepository, TrajetLifecycleService $lifecycle): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) return $this->json(['error' => 'Non authentifié'], Response::HTTP_UNAUTHORIZED);
@@ -225,6 +225,7 @@ class TrajetController extends AbstractController
 
         $result = [];
         foreach ($qb->getQuery()->getResult() as $trajet) {
+            $lifecycle->evaluerTransitions($trajet);
             $result[] = $this->formatTrajet($trajet);
         }
         return $this->json($result);
@@ -234,8 +235,9 @@ class TrajetController extends AbstractController
     // 5. Consulter un trajet spécifique
     // =========================================================================
     #[Route('/trajets/{id}', name: 'show', methods: ['GET'], requirements: ['id' => '\d+'])]
-    public function show(Trajet $trajet): JsonResponse
+    public function show(Trajet $trajet, TrajetLifecycleService $lifecycle): JsonResponse
     {
+        $lifecycle->evaluerTransitions($trajet);
         return $this->json($this->formatTrajet($trajet));
     }
 

@@ -28,6 +28,15 @@ class Message
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $typeMessage = null;
 
+    #[ORM\Column]
+    private ?bool $estSignale = false;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $raisonSignalement = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $dateSignalement = null;
+
     // RELATIONS CORRECTES
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'messagesEnvoyes')]
     #[ORM\JoinColumn(nullable: false)]
@@ -124,4 +133,13 @@ class Message
         $this->destinataire = $destinataire;
         return $this;
     }
+
+    public function isEstSignale(): ?bool { return $this->estSignale; }
+    public function setEstSignale(bool $estSignale): static { $this->estSignale = $estSignale; return $this; }
+
+    public function getRaisonSignalement(): ?string { return $this->raisonSignalement; }
+    public function setRaisonSignalement(?string $raisonSignalement): static { $this->raisonSignalement = $raisonSignalement; return $this; }
+
+    public function getDateSignalement(): ?\DateTimeImmutable { return $this->dateSignalement; }
+    public function setDateSignalement(?\DateTimeImmutable $dateSignalement): static { $this->dateSignalement = $dateSignalement; return $this; }
 }
