@@ -726,6 +726,26 @@ class TrajetController extends AbstractController
                     }
                 } else {
                     $reservation->setStatut('NON_PRESENT');
+                    $absentPassager = $reservation->getPassager();
+                    if ($absentPassager && $absentPassager->getId() !== $user->getId()) {
+                        $notificationService->notifier(
+                            $absentPassager,
+                            '❌ Trajet manqué',
+                            sprintf(
+                                'Vous avez manqué le trajet %s → %s du %s à %s. Votre réservation a été annulée.',
+                                $trajet->getVilleDepart(),
+                                $trajet->getVilleArrivee(),
+                                $trajet->getDateDepart()?->format('d/m/Y') ?: '',
+                                $trajet->getHeureDepart()?->format('H:i') ?: ''
+                            ),
+                            'trajet_manque',
+                            $trajet,
+                            $reservation,
+                            '/passager/reservations',
+                            '❌',
+                            '#EF4444'
+                        );
+                    }
                 }
             }
         }
