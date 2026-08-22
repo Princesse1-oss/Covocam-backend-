@@ -21,7 +21,7 @@ services:
       - key: PLATFORM_COMMISSION_RATE
         value: "0.10"
       - key: MAILER_DSN
-        value: smtp://andriadongmo@gmail.com:fvmnkbwttzkjzjzy@smtp.gmail.com:465?encryption=ssl&auth_mode=login
+        value: smtp://andriadongmo%40gmail.com:fvmnkbwttzkjzjzy@smtp.gmail.com:465?encryption=ssl&auth_mode=login
       - key: MAILER_SENDER_EMAIL
         value: andriadongmo@gmail.com
       - key: FRONTEND_URL
