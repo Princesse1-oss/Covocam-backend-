@@ -21,9 +21,9 @@ services:
       - key: PLATFORM_COMMISSION_RATE
         value: "0.10"
       - key: MAILER_DSN
-        sync: false
+        value: smtp://andriadongmo@gmail.com:fvmnkbwttzkjzjzy@smtp.gmail.com:465?encryption=ssl&auth_mode=login
       - key: MAILER_SENDER_EMAIL
-        value: noreply@covocam.com
+        value: andriadongmo@gmail.com
       - key: FRONTEND_URL
         value: https://covocam-frontend.vercel.app
       - key: CAMPAY_APP_CODE

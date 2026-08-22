@@ -38,8 +38,8 @@ RUN echo 'APP_ENV=prod' > .env \
     && echo 'JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem' >> .env \
     && echo 'JWT_PASSPHRASE=' >> .env \
     && echo 'CORS_ALLOW_ORIGIN=*' >> .env \
-    && echo 'MAILER_DSN=smtp://localhost' >> .env \
-    && echo 'MAILER_SENDER_EMAIL=noreply@covocam.com' >> .env \
+    && echo 'MAILER_DSN=smtp://andriadongmo@gmail.com:fvmnkbwttzkjzjzy@smtp.gmail.com:465?encryption=ssl&auth_mode=login' >> .env \
+    && echo 'MAILER_SENDER_EMAIL=andriadongmo@gmail.com' >> .env \
     && echo 'CAMPAY_APP_CODE=override-me' >> .env \
     && echo 'CAMPAY_APP_PASSWORD=override-me' >> .env \
     && echo 'PAYMENT_MODE=simulation' >> .env \
