@@ -565,6 +565,13 @@ class AdminController extends AbstractController
                 'villeDepart' => $trajet->getVilleDepart(),
                 'villeArrivee' => $trajet->getVilleArrivee(),
                 'dateDepart' => $trajet->getDateDepart()?->format('Y-m-d H:i:s'),
+                'heureDepart' => method_exists($trajet, 'getHeureDepart') && $trajet->getHeureDepart() ? $trajet->getHeureDepart()->format('H:i') : null,
+                'pointDepartLat' => $trajet->getPointDepartLat(),
+                'pointDepartLng' => $trajet->getPointDepartLng(),
+                'pointArriveeLat' => $trajet->getPointArriveeLat(),
+                'pointArriveeLng' => $trajet->getPointArriveeLng(),
+                'quartierDepart' => method_exists($trajet, 'getQuartierDepart') ? $trajet->getQuartierDepart() : null,
+                'quartierArrivee' => method_exists($trajet, 'getQuartierArrivee') ? $trajet->getQuartierArrivee() : null,
             ];
         }
 
