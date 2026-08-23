@@ -433,6 +433,96 @@ class TrajetController extends AbstractController
         ]);
     }
 
+    #[Route('/conducteur/trajets/{id}/completer', name: 'conducteur_completer', methods: ['PUT'])]
+    public function completer(
+        int $id,
+        Request $request,
+        EntityManagerInterface $em,
+        TrajetRepository $trajetRepository,
+        NotificationService $notificationService
+    ): JsonResponse {
+        $user = $this->getUser();
+        if (!$user) return $this->json(['error' => 'Non authentifié'], Response::HTTP_UNAUTHORIZED);
+
+        $trajet = $trajetRepository->find($id);
+        if (!$trajet || $trajet->getConducteur()->getId() !== $user->getId()) {
+            return $this->json(['error' => 'Trajet non trouvé ou non autorisé'], Response::HTTP_FORBIDDEN);
+        }
+
+        $demande = $em->getRepository(\App\Entity\DemandeTrajet::class)->findOneBy(['trajetCree' => $trajet]);
+        if (!$demande) {
+            return $this->json(['error' => 'Aucune demande associée à ce trajet'], Response::HTTP_NOT_FOUND);
+        }
+
+        if (!in_array($demande->getStatut(), ['ACCEPTEE', 'CONFIRMEE'], true)) {
+            return $this->json(['error' => 'Cette demande n\'est pas en attente de complétion.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (isset($data['vehiculeId'])) {
+            $vehicule = $em->getRepository(\App\Entity\Vehicule::class)->find($data['vehiculeId']);
+            if ($vehicule && $vehicule->getUtilisateur()->getId() === $user->getId()) {
+                $trajet->setVehicule($vehicule);
+                $placesTotales = (int) $vehicule->getPlaces();
+                $placesDemandees = (int) $demande->getNbPlaces();
+                if ($placesTotales < $placesDemandees) {
+                    return $this->json(['error' => 'Le véhicule n\'a pas assez de places.'], Response::HTTP_BAD_REQUEST);
+                }
+                $trajet->setPlacesDisponibles($placesTotales - $placesDemandees);
+            } else {
+                return $this->json(['error' => 'Véhicule invalide.'], Response::HTTP_BAD_REQUEST);
+            }
+        }
+
+        if (isset($data['heureArriveeEstimee']) && method_exists($trajet, 'setHeureArriveeEstimee')) {
+            $heureArrivee = \DateTime::createFromFormat('H:i', $data['heureArriveeEstimee']);
+            if ($heureArrivee) $trajet->setHeureArriveeEstimee($heureArrivee);
+        }
+        if (isset($data['description'])) $trajet->setDescription($data['description']);
+        if (isset($data['bagagesAutorises']) && method_exists($trajet, 'setBagagesAutorises')) $trajet->setBagagesAutorises($data['bagagesAutorises']);
+        if (isset($data['gpsEnabled']) && method_exists($trajet, 'setGpsEnabled')) $trajet->setGpsEnabled($data['gpsEnabled']);
+
+        if (!$trajet->getVehicule()) {
+            return $this->json(['error' => 'Veuillez sélectionner un véhicule.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $trajet->setStatut('OUVERT');
+        $demande->setStatut('CONFIRMEE');
+
+        $reservation = $em->getRepository(Reservation::class)->findOneBy([
+            'trajet' => $trajet,
+            'passager' => $demande->getPassager()
+        ]);
+
+        if (!$reservation) {
+            $reservation = new Reservation();
+            $reservation->setPassager($demande->getPassager());
+            $reservation->setTrajet($trajet);
+            $reservation->setPlacesReservees($demande->getNbPlaces());
+            $reservation->setPrixTotal($demande->getNbPlaces() * (float) $demande->getPrixPropose());
+            $reservation->setStatut('CONFIRMEE');
+            $em->persist($reservation);
+        }
+
+        $this->notificationService->notifier(
+            $demande->getPassager(),
+            'Trajet confirmé !',
+            sprintf('Votre trajet %s → %s est maintenant confirmé. Votre place est réservée.', $trajet->getVilleDepart(), $trajet->getVilleArrivee()),
+            'trajet_confirme',
+            $trajet,
+            $reservation,
+            '/passager/reservations'
+        );
+
+        $em->flush();
+
+        return $this->json([
+            'message' => 'Trajet publié avec succès',
+            'trajet' => $this->formatTrajet($trajet)
+        ]);
+    }
+
     // =========================================================================
     // 7. Annuler un trajet (Conducteur)
     // =========================================================================

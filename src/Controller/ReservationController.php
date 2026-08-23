@@ -169,6 +169,14 @@ class ReservationController extends AbstractController
             return new JsonResponse(['error' => 'Vous ne pouvez pas réserver votre propre trajet'], Response::HTTP_BAD_REQUEST);
         }
 
+        $existingReservation = $entityManager->getRepository(Reservation::class)->findOneBy([
+            'trajet' => $trajet,
+            'passager' => $user,
+        ]);
+        if ($existingReservation && !in_array($existingReservation->getStatut(), ['ANNULEE', 'REFUSEE', 'NON_PRESENT'])) {
+            return new JsonResponse(['error' => 'Vous avez déjà réservé ce trajet.'], Response::HTTP_BAD_REQUEST);
+        }
+
         $reservation = new Reservation();
         $reservation->setPlacesReservees($placesDemandees);
         $prix = method_exists($trajet, 'getPrixParPlace') ? $trajet->getPrixParPlace() : 0;
