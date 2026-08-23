@@ -46,7 +46,7 @@ class VehiculeController extends AbstractController
             ]);
         } catch (\Throwable $e) {
             error_log("❌ ERREUR GET vehicule: " . $e->getMessage());
-            return $this->json(['hasVehicule' => false, 'vehicule' => null]);
+            return $this->json(['error' => 'Erreur serveur lors de la récupération du véhicule'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
