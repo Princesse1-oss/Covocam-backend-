@@ -7,8 +7,9 @@ use App\Entity\Reservation;
 use App\Entity\Notification;
 use App\Entity\PositionHistory;
 use App\Repository\TrajetRepository;
-use App\Repository\ReservationRepository; // ✅ AJOUTÉ : Nécessaire pour les annulations et présences
+use App\Repository\ReservationRepository;
 use App\Repository\VehiculeRepository;
+use App\Repository\UtilisateurRepository;
 use App\Service\NotificationService;
 use App\Service\PrixService;
 use App\Service\TrajetLifecycleService;
@@ -175,6 +176,24 @@ class TrajetController extends AbstractController
     // =========================================================================
     // 3. Rechercher des trajets (Passager)
     // =========================================================================
+    // =========================================================================
+    // 0. Stats publiques (conducteurs)
+    // =========================================================================
+    #[Route('/stats/conducteurs', name: 'stats_conducteurs', methods: ['GET'])]
+    public function statsConducteurs(UtilisateurRepository $utilisateurRepository): JsonResponse
+    {
+        $total = $utilisateurRepository->count(['typeUtilisateur' => 'conducteur'])
+            + $utilisateurRepository->count(['typeUtilisateur' => 'les_deux']);
+
+        return $this->json([
+            'total' => (int) $total,
+            'actifs' => (int) $total,
+        ]);
+    }
+
+    // =========================================================================
+    // 1. Recherche de trajets
+    // =========================================================================
     #[Route('/trajets/search', name: 'trajets_search', methods: ['GET'])]
     public function search(Request $request, TrajetRepository $trajetRepository, TrajetLifecycleService $lifecycle): JsonResponse
     {
@@ -214,7 +233,7 @@ class TrajetController extends AbstractController
         $user = $this->getUser();
         if (!$user) return $this->json(['error' => 'Non authentifié'], Response::HTTP_UNAUTHORIZED);
 
-        $dateLimite = (new \DateTime())->modify('-2 days');
+        $dateLimite = (new \DateTime())->modify('-5 days');
 
         $qb = $trajetRepository->createQueryBuilder('t')
             ->where('t.conducteur = :user')
