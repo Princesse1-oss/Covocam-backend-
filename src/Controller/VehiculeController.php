@@ -305,11 +305,23 @@ class VehiculeController extends AbstractController
         if (method_exists($v, 'getPlaces')) { $data['places'] = $v->getPlaces(); $data['nbPlaces'] = $v->getPlaces(); }
         elseif (method_exists($v, 'getNbPlaces')) { $data['nbPlaces'] = $v->getNbPlaces(); }
 
-        if (method_exists($v, 'getPhotoAvant')) $data['photo'] = $v->getPhotoAvant();
-        if (method_exists($v, 'getPhotoAvant')) $data['photoAvant'] = $v->getPhotoAvant();
-        if (method_exists($v, 'getPhotoArriere')) $data['photoArriere'] = $v->getPhotoArriere();
-        if (method_exists($v, 'getPhotoInterieur')) $data['photoInterieur'] = $v->getPhotoInterieur();
-        if (method_exists($v, 'getPhotoCoffre')) $data['photoCoffre'] = $v->getPhotoCoffre();
+        if (method_exists($v, 'getPhotoAvant') && $v->getPhotoAvant()) {
+            $photoAvant = $v->getPhotoAvant();
+            $data['photo'] = str_starts_with($photoAvant, '/uploads/') ? $photoAvant : '/uploads/vehicules/' . $photoAvant;
+            $data['photoAvant'] = $data['photo'];
+        }
+        if (method_exists($v, 'getPhotoArriere') && $v->getPhotoArriere()) {
+            $photoArriere = $v->getPhotoArriere();
+            $data['photoArriere'] = str_starts_with($photoArriere, '/uploads/') ? $photoArriere : '/uploads/vehicules/' . $photoArriere;
+        }
+        if (method_exists($v, 'getPhotoInterieur') && $v->getPhotoInterieur()) {
+            $photoInterieur = $v->getPhotoInterieur();
+            $data['photoInterieur'] = str_starts_with($photoInterieur, '/uploads/') ? $photoInterieur : '/uploads/vehicules/' . $photoInterieur;
+        }
+        if (method_exists($v, 'getPhotoCoffre') && $v->getPhotoCoffre()) {
+            $photoCoffre = $v->getPhotoCoffre();
+            $data['photoCoffre'] = str_starts_with($photoCoffre, '/uploads/') ? $photoCoffre : '/uploads/vehicules/' . $photoCoffre;
+        }
         if (method_exists($v, 'getAnnee')) $data['annee'] = $v->getAnnee();
         if (method_exists($v, 'getCarburant')) $data['carburant'] = $v->getCarburant();
         if (method_exists($v, 'getBoiteVitesse')) $data['boiteVitesse'] = $v->getBoiteVitesse();

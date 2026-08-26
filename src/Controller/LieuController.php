@@ -11,15 +11,22 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-
 #[Route('/api/lieux', name: 'api_lieux_')]
 class LieuController extends AbstractController
 {
     // 1. Liste des lieux
     #[Route('', name: 'list', methods: ['GET'])]
-    public function list(LieuRepository $lieuRepository): JsonResponse
+    public function list(LieuRepository $lieuRepository, Request $request): JsonResponse
     {
-        $lieux = $lieuRepository->findBy(['estActif' => true], ['nom' => 'ASC']);
+        $showAll = $request->query->get('all', '') === '1';
+        $user = $this->getUser();
+        $isAdmin = $user && in_array('ROLE_ADMIN', $user->getRoles());
+
+        if ($showAll && $isAdmin) {
+            $lieux = $lieuRepository->findBy([], ['nom' => 'ASC']);
+        } else {
+            $lieux = $lieuRepository->findBy(['estActif' => true], ['nom' => 'ASC']);
+        }
         $result = [];
         foreach ($lieux as $lieu) {
             $result[] = $this->formatLieu($lieu);

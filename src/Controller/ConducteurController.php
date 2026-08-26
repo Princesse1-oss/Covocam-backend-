@@ -7,6 +7,10 @@ use App\Repository\TrajetRepository;
 use App\Repository\ReservationRepository;
 use App\Repository\VehiculeRepository;
 use App\Repository\EvaluationRepository;
+use App\Entity\Evaluation;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -207,5 +211,109 @@ class ConducteurController extends AbstractController
             'aVehicule' => $vehicule !== null,
             'alertes' => $alertes,
         ]);
+    }
+
+    #[Route('/evaluations/evaluer-passager', name: 'evaluer_passager', methods: ['POST'])]
+    public function evaluerPassager(
+        Request $request,
+        ReservationRepository $reservationRepository,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $conducteur = $this->getConducteurOrDeny();
+
+        $data = json_decode($request->getContent(), true);
+        $reservationId = (int) ($data['reservationId'] ?? 0);
+        $note = (int) ($data['note'] ?? 0);
+        $commentaire = $data['commentaire'] ?? '';
+
+        if ($reservationId <= 0) {
+            return new JsonResponse(['error' => 'ID de réservation requis'], Response::HTTP_BAD_REQUEST);
+        }
+        if ($note < 1 || $note > 5) {
+            return new JsonResponse(['error' => 'La note doit être comprise entre 1 et 5'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $reservation = $reservationRepository->find($reservationId);
+        if (!$reservation) {
+            return new JsonResponse(['error' => 'Réservation non trouvée'], Response::HTTP_NOT_FOUND);
+        }
+
+        $trajet = $reservation->getTrajet();
+        if (!$trajet || $trajet->getConducteur()->getId() !== $conducteur->getId()) {
+            return new JsonResponse(['error' => 'Non autorisé'], Response::HTTP_FORBIDDEN);
+        }
+
+        $existing = $entityManager->getRepository(Evaluation::class)->findOneBy([
+            'auteur' => $conducteur,
+            'reservation' => $reservation,
+        ]);
+        if ($existing) {
+            return new JsonResponse(['error' => 'Vous avez déjà évalué ce passager pour ce trajet'], Response::HTTP_CONFLICT);
+        }
+
+        $evaluation = new Evaluation();
+        $evaluation->setAuteur($conducteur);
+        $evaluation->setCible($reservation->getPassager());
+        $evaluation->setReservation($reservation);
+        $evaluation->setTrajet($trajet);
+        $evaluation->setNote($note);
+        $evaluation->setCommentaire($commentaire);
+        $evaluation->setDateEvaluation(new \DateTimeImmutable());
+
+        $entityManager->persist($evaluation);
+        $entityManager->flush();
+
+        return new JsonResponse(['message' => 'Évaluation envoyée avec succès'], Response::HTTP_CREATED);
+    }
+
+    #[Route('/reservations-a-evaluer', name: 'reservations_a_evaluer', methods: ['GET'])]
+    public function getReservationsAEvaluer(
+        ReservationRepository $reservationRepository,
+        EvaluationRepository $evaluationRepository
+    ): JsonResponse {
+        $conducteur = $this->getConducteurOrDeny();
+
+        $reservations = $reservationRepository->createQueryBuilder('r')
+            ->innerJoin('r.trajet', 't')
+            ->innerJoin('r.passager', 'p')
+            ->where('t.conducteur = :conducteur')
+            ->andWhere('r.statut = :statut')
+            ->andWhere('t.statut = :trajetStatut')
+            ->setParameter('conducteur', $conducteur)
+            ->setParameter('statut', 'TERMINEE')
+            ->setParameter('trajetStatut', 'TERMINE')
+            ->orderBy('t.dateDepart', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        $result = [];
+        foreach ($reservations as $r) {
+            $passager = $r->getPassager();
+            $trajet = $r->getTrajet();
+
+            $alreadyEvaluated = $evaluationRepository->findOneBy([
+                'auteur' => $conducteur,
+                'reservation' => $r,
+            ]);
+
+            $result[] = [
+                'id' => $r->getId(),
+                'dejaEvalue' => $alreadyEvaluated !== null,
+                'passager' => [
+                    'id' => $passager->getId(),
+                    'nom' => $passager->getNom(),
+                    'prenom' => $passager->getPrenom(),
+                    'photo' => $passager->getPhoto(),
+                ],
+                'trajet' => [
+                    'id' => $trajet->getId(),
+                    'villeDepart' => $trajet->getVilleDepart(),
+                    'villeArrivee' => $trajet->getVilleArrivee(),
+                    'dateDepart' => $trajet->getDateDepart()?->format('Y-m-d H:i'),
+                ],
+            ];
+        }
+
+        return $this->json($result);
     }
 }

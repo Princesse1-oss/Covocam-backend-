@@ -137,7 +137,7 @@ class TrajetController extends AbstractController
 
         if (method_exists($trajet, 'setDescription')) $trajet->setDescription($data['description'] ?? null);
 
-        $trajet->setStatut('OUVERT');
+        $trajet->setStatut(in_array($data['statut'] ?? '', ['BROUILLON']) ? 'BROUILLON' : 'OUVERT');
         $trajet->setConducteur($user);
         $trajet->setVehicule($vehicule);
 

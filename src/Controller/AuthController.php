@@ -16,6 +16,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/api', name: 'api_')]
 class AuthController extends AbstractController
 {
+    private static array $loginAttempts = [];
+
     #[Route('/register', name: 'register', methods: ['POST'])]
     public function register(
         Request $request,
@@ -143,16 +145,56 @@ class AuthController extends AbstractController
             return $this->json(['error' => 'Email et mot de passe requis'], Response::HTTP_BAD_REQUEST);
         }
 
+        $email = strtolower(trim($data['email']));
+
+        // ✅ RATE LIMITING : vérifier si le compte est verrouillé
+        if (isset(self::$loginAttempts[$email])) {
+            $attempt = self::$loginAttempts[$email];
+
+            if ($attempt['lockedUntil'] instanceof \DateTimeImmutable && $attempt['lockedUntil'] > new \DateTimeImmutable()) {
+                $retryAfter = $attempt['lockedUntil']->getTimestamp() - (new \DateTimeImmutable())->getTimestamp();
+                return $this->json([
+                    'error' => 'Trop de tentatives. Réessayez dans ' . $retryAfter . ' secondes.',
+                    'retryAfter' => $retryAfter,
+                ], Response::HTTP_TOO_MANY_REQUESTS);
+            }
+
+            // Lock expiré → reset
+            if ($attempt['lockedUntil'] instanceof \DateTimeImmutable && $attempt['lockedUntil'] <= new \DateTimeImmutable()) {
+                self::$loginAttempts[$email] = ['count' => 0, 'lockedUntil' => null];
+            }
+        }
+
         // 1. Chercher l'utilisateur par email
-        $user = $utilisateurRepository->findOneBy(['email' => $data['email']]);
+        $user = $utilisateurRepository->findOneBy(['email' => $email]);
 
         if (!$user || !$passwordHasher->isPasswordValid($user, $data['motDePasse'])) {
-            return $this->json(['error' => 'Identifiants incorrects'], Response::HTTP_UNAUTHORIZED);
+            // ✅ RATE LIMITING : incrémenter le compteur
+            if (!isset(self::$loginAttempts[$email])) {
+                self::$loginAttempts[$email] = ['count' => 0, 'lockedUntil' => null];
+            }
+            self::$loginAttempts[$email]['count']++;
+
+            if (self::$loginAttempts[$email]['count'] >= 5) {
+                self::$loginAttempts[$email]['lockedUntil'] = (new \DateTimeImmutable())->modify('+60 seconds');
+                return $this->json([
+                    'error' => 'Trop de tentatives. Compte verrouillé pendant 60 secondes.',
+                    'retryAfter' => 60,
+                ], Response::HTTP_TOO_MANY_REQUESTS);
+            }
+
+            $remaining = 5 - self::$loginAttempts[$email]['count'];
+            return $this->json([
+                'error' => 'Identifiants incorrects. ' . $remaining . ' tentative(s) restante(s).',
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         if (!$user->isEstActif()) {
             return $this->json(['error' => 'Compte désactivé'], Response::HTTP_FORBIDDEN);
         }
+
+        // ✅ RATE LIMITING : connexion réussie → reset
+        unset(self::$loginAttempts[$email]);
 
         // 2. Générer le token JWT
         $token = $jwtManager->create($user);
