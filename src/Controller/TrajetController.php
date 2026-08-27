@@ -51,6 +51,7 @@ class TrajetController extends AbstractController
         }
 
         $data = json_decode($request->getContent(), true);
+        $estBrouillon = ($data['statut'] ?? '') === 'BROUILLON';
         $vehiculeId = $data['vehiculeId'] ?? null;
 
         if (!$vehiculeId) {
@@ -87,7 +88,7 @@ class TrajetController extends AbstractController
         
         if (!empty($dateDepartStr) && !empty($heureDepartStr) && method_exists($trajet, 'setDateDepart')) {
             $dateDepartComplete = new \DateTime($dateDepartStr . ' ' . $heureDepartStr);
-            if ($dateDepartComplete <= new \DateTime()) {
+            if (!$estBrouillon && $dateDepartComplete <= new \DateTime()) {
                 return $this->json(['error' => 'La date et l\'heure de départ doivent être dans le futur.'], Response::HTTP_BAD_REQUEST);
             }
             $trajet->setDateDepart($dateDepartComplete);
@@ -108,7 +109,7 @@ class TrajetController extends AbstractController
         elseif (method_exists($trajet, 'setNbPlaces')) $trajet->setNbPlaces($nbPlaces);
 
         $prix = (int)($data['prixParPassager'] ?? 0);
-        if ($prix < 500) {
+        if (!$estBrouillon && $prix < 500) {
             return $this->json(['error' => 'Le prix minimum est de 500 FCFA.'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -123,7 +124,7 @@ class TrajetController extends AbstractController
             isset($data['pointArriveeLng']) ? (float) $data['pointArriveeLng'] : null
         )['prixMax'];
 
-        if ($prix > $prixMax) {
+        if (!$estBrouillon && $prix > $prixMax) {
             return $this->json(['error' => sprintf('Le prix est plafonné à %d FCFA pour cette route.', (int) $prixMax)], Response::HTTP_BAD_REQUEST);
         }
 
