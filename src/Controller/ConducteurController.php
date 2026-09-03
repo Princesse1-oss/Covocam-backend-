@@ -261,6 +261,16 @@ class ConducteurController extends AbstractController
         $evaluation->setDateEvaluation(new \DateTimeImmutable());
 
         $entityManager->persist($evaluation);
+
+        $passagerCible = $reservation->getPassager();
+        if ($passagerCible) {
+            $entityManager->refresh($passagerCible);
+            if (method_exists($passagerCible, 'calculerNoteMoyenne')) {
+                $passagerCible->calculerNoteMoyenne();
+                $entityManager->persist($passagerCible);
+            }
+        }
+
         $entityManager->flush();
 
         return new JsonResponse(['message' => 'Évaluation envoyée avec succès'], Response::HTTP_CREATED);
@@ -277,11 +287,11 @@ class ConducteurController extends AbstractController
             ->innerJoin('r.trajet', 't')
             ->innerJoin('r.passager', 'p')
             ->where('t.conducteur = :conducteur')
-            ->andWhere('r.statut IN (:statutsResa)')
             ->andWhere('t.statut = :trajetStatut')
+            ->andWhere('r.statut IN (:statutsResa)')
             ->setParameter('conducteur', $conducteur)
-            ->setParameter('statutsResa', ['CONFIRMEE', 'TERMINEE'])
             ->setParameter('trajetStatut', 'TERMINE')
+            ->setParameter('statutsResa', ['CONFIRMEE', 'TERMINEE'])
             ->orderBy('t.dateDepart', 'DESC')
             ->getQuery()
             ->getResult();

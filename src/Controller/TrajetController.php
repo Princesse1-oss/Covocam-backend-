@@ -139,6 +139,10 @@ class TrajetController extends AbstractController
 
         if (method_exists($trajet, 'setDescription')) $trajet->setDescription($data['description'] ?? null);
 
+        if (method_exists($trajet, 'setVillesEtapes') && isset($data['villesEtapes']) && is_array($data['villesEtapes'])) {
+            $trajet->setVillesEtapes(array_values(array_filter(array_map('trim', $data['villesEtapes']))));
+        }
+
         $trajet->setStatut(in_array($data['statut'] ?? '', ['BROUILLON']) ? 'BROUILLON' : 'OUVERT');
         $trajet->setConducteur($user);
         $trajet->setVehicule($vehicule);
@@ -924,6 +928,7 @@ class TrajetController extends AbstractController
             'placesDisponibles' => method_exists($trajet, 'getPlacesDisponibles') ? $trajet->getPlacesDisponibles() : (method_exists($trajet, 'getNbPlaces') ? $trajet->getNbPlaces() : 0),
             'prixParPlace' => method_exists($trajet, 'getPrixParPlace') ? $trajet->getPrixParPlace() : (method_exists($trajet, 'getPrixParPassager') ? $trajet->getPrixParPassager() : 0),
             'description' => method_exists($trajet, 'getDescription') ? $trajet->getDescription() : null,
+            'villesEtapes' => method_exists($trajet, 'getVillesEtapes') ? $trajet->getVillesEtapes() : null,
 
             // Champs GPS & suivi
             'pointDepartLat' => $trajet->getPointDepartLat(),

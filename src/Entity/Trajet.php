@@ -91,6 +91,10 @@ class Trajet
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $dateTermine = null;
 
+    /** @var string[]|null Étapes intermédiaires optionnelles (formats "Ville (Quartier)") */
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $villesEtapes = null;
+
     // ==========================================
     // RELATIONS
     // ==========================================
@@ -271,4 +275,9 @@ class Trajet
 
     public function getDateTermine(): ?\DateTimeImmutable { return $this->dateTermine; }
     public function setDateTermine(?\DateTimeImmutable $dateTermine): static { $this->dateTermine = $dateTermine; return $this; }
+
+    /** @return string[]|null */
+    public function getVillesEtapes(): ?array { return $this->villesEtapes; }
+    /** @param string[]|null $villesEtapes */
+    public function setVillesEtapes(?array $villesEtapes): static { $this->villesEtapes = $villesEtapes; return $this; }
 }
