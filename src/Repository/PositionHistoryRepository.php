@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\PositionHistory;
 use App\Entity\Trajet;
+use App\Entity\Utilisateur;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,6 +20,19 @@ class PositionHistoryRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->andWhere('p.trajet = :trajet')
             ->setParameter('trajet', $trajet)
+            ->orderBy('p.timestamp', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findDernierePositionUtilisateurTrajet(Utilisateur $utilisateur, Trajet $trajet): ?PositionHistory
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.trajet = :trajet')
+            ->andWhere('p.utilisateur = :utilisateur')
+            ->setParameter('trajet', $trajet)
+            ->setParameter('utilisateur', $utilisateur)
             ->orderBy('p.timestamp', 'DESC')
             ->setMaxResults(1)
             ->getQuery()

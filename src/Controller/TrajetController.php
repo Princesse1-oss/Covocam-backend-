@@ -746,16 +746,24 @@ class TrajetController extends AbstractController
 
             $aConfirmePresence = $confirmation !== null && ($confirmation->isEstPresent() || (bool) $confirmation->getConfirmeParConducteur());
 
+            $positionPassager = $entityManager->getRepository(PositionHistory::class)
+                ->findDernierePositionUtilisateurTrajet($passager, $trajet);
+
             $result[] = [
                 'id' => $reservation->getId(),
                 'statut' => $reservation->getStatut(),
                 'placesReservees' => $reservation->getPlacesReservees(),
                 'prixTotal' => $reservation->getPrixTotal(),
+                'latitude' => $positionPassager?->getLatitude(),
+                'longitude' => $positionPassager?->getLongitude(),
+                'positionUpdatedAt' => $positionPassager?->getTimestamp()?->format('Y-m-d H:i:s'),
                 'passager' => [
                     'id' => $passager->getId(),
                     'nom' => $passager->getNom(),
                     'prenom' => $passager->getPrenom(),
                     'photo' => $passager->getPhoto(),
+                    'latitude' => $positionPassager?->getLatitude(),
+                    'longitude' => $positionPassager?->getLongitude(),
                     'aConfirmePresence' => $aConfirmePresence,
                     'estPresent' => $aConfirmePresence
                 ]
