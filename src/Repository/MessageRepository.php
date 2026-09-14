@@ -48,6 +48,22 @@ class MessageRepository extends ServiceEntityRepository
     }
 
     /**
+     * Vrai si au moins un message a déjà été échangé entre les deux utilisateurs
+     */
+    public function aDejaEchange(int $user1Id, int $user2Id): bool
+    {
+        $count = $this->createQueryBuilder('m')
+            ->select('COUNT(m.id)')
+            ->where('(m.expediteur = :user1 AND m.destinataire = :user2) OR (m.expediteur = :user2 AND m.destinataire = :user1)')
+            ->setParameter('user1', $user1Id)
+            ->setParameter('user2', $user2Id)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $count > 0;
+    }
+
+    /**
      * Compte le nombre de messages non lus pour un utilisateur
      */
     public function countNonLusByUtilisateur(int $userId): int

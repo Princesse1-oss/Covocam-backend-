@@ -20,7 +20,8 @@ class MessageController extends AbstractController
     public function send(
         Request $request,
         EntityManagerInterface $entityManager,
-        UtilisateurRepository $utilisateurRepository
+        UtilisateurRepository $utilisateurRepository,
+        MessageRepository $messageRepository
     ): JsonResponse {
         $user = $this->getUser();
         if (!$user) {
@@ -46,18 +47,17 @@ class MessageController extends AbstractController
             return $this->json(['error' => 'Le message ne peut pas dépasser 1000 caractères'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Vérification: messagerie uniquement entre conducteur et passager avec réservation active
+        // Vérification: messagerie entre conducteur et passager ayant UNE réservation (passée ou active)
+        // ou ayant déjà échangé des messages (continuité de conversation).
         $hasReservation = false;
         $userReservations = $user->getReservations();
         foreach ($userReservations as $reservation) {
-            if (in_array($reservation->getStatut(), ['EN_ATTENTE', 'A_PAYER', 'CONFIRMEE'])) {
-                $trajet = $reservation->getTrajet();
-                if ($trajet) {
-                    $conducteur = $trajet->getConducteur();
-                    if ($conducteur && $conducteur->getId() === $destinataire->getId()) {
-                        $hasReservation = true;
-                        break;
-                    }
+            $trajet = $reservation->getTrajet();
+            if ($trajet) {
+                $conducteur = $trajet->getConducteur();
+                if ($conducteur && $conducteur->getId() === $destinataire->getId()) {
+                    $hasReservation = true;
+                    break;
                 }
             }
         }
@@ -66,18 +66,21 @@ class MessageController extends AbstractController
         if (!$hasReservation && method_exists($user, 'getTrajetsConduits')) {
             foreach ($user->getTrajetsConduits() as $trajet) {
                 foreach ($trajet->getReservations() as $reservation) {
-                    if (in_array($reservation->getStatut(), ['EN_ATTENTE', 'A_PAYER', 'CONFIRMEE'])) {
-                        if ($reservation->getPassager()->getId() === $destinataire->getId()) {
-                            $hasReservation = true;
-                            break 2;
-                        }
+                    if ($reservation->getPassager() && $reservation->getPassager()->getId() === $destinataire->getId()) {
+                        $hasReservation = true;
+                        break 2;
                     }
                 }
             }
         }
 
+        // Continuité de conversation
+        if (!$hasReservation && method_exists($user, 'getId')) {
+            $hasReservation = $messageRepository->aDejaEchange($user->getId(), $destinataire->getId());
+        }
+
         if (!$hasReservation) {
-            return $this->json(['error' => 'Vous ne pouvez envoyer des messages qu\'aux utilisateurs avec qui vous avez une réservation active'], Response::HTTP_FORBIDDEN);
+            return $this->json(['error' => 'Vous ne pouvez envoyer des messages qu\'aux utilisateurs avec qui vous avez une réservation'], Response::HTTP_FORBIDDEN);
         }
 
         // Créer le message

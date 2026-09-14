@@ -207,7 +207,9 @@ class NotificationController extends AbstractController
             $data['trajet'] = [
                 'id' => $notification->getTrajet()->getId(),
                 'villeDepart' => $notification->getTrajet()->getVilleDepart(),
-                'villeArrivee' => $notification->getTrajet()->getVilleArrivee()
+                'villeArrivee' => $notification->getTrajet()->getVilleArrivee(),
+                'dateDepart' => $notification->getTrajet()->getDateDepart()?->format('Y-m-d'),
+                'heureDepart' => $notification->getTrajet()->getHeureDepart()?->format('H:i')
             ];
         }
 

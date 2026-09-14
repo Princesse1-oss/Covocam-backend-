@@ -262,16 +262,20 @@ class ConducteurController extends AbstractController
 
         $entityManager->persist($evaluation);
 
+        // ✅ On flush D'ABORD pour que la nouvelle évaluation soit en base,
+        //    puis on refresh le passager pour que sa collection evaluationsRecues
+        //    contienne bien la note ajoutée avant de recalculer la moyenne.
+        $entityManager->flush();
+
         $passagerCible = $reservation->getPassager();
         if ($passagerCible) {
             $entityManager->refresh($passagerCible);
             if (method_exists($passagerCible, 'calculerNoteMoyenne')) {
                 $passagerCible->calculerNoteMoyenne();
                 $entityManager->persist($passagerCible);
+                $entityManager->flush();
             }
         }
-
-        $entityManager->flush();
 
         return new JsonResponse(['message' => 'Évaluation envoyée avec succès'], Response::HTTP_CREATED);
     }
