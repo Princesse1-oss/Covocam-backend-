@@ -32,7 +32,7 @@ services:
         sync: false
       - key: CORS_ALLOW_ORIGIN
         sync: false
-    healthCheckPath: /api/login
+    healthCheckPath: /api/health
     autoDeploy: true
 
 databases:

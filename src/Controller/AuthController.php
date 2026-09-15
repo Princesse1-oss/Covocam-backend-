@@ -127,9 +127,14 @@ class AuthController extends AbstractController
     }
 
     #[Route('/health', name: 'health', methods: ['GET'])]
-    public function health(): JsonResponse
+    public function health(\Doctrine\ORM\EntityManagerInterface $entityManager): JsonResponse
     {
-        return $this->json(['status' => 'ok']);
+        try {
+            $entityManager->getConnection()->executeQuery('SELECT 1');
+            return $this->json(['status' => 'ok']);
+        } catch (\Throwable $e) {
+            return $this->json(['status' => 'error', 'message' => $e->getMessage()], Response::HTTP_SERVICE_UNAVAILABLE);
+        }
     }
 
     #[Route('/login', name: 'login', methods: ['POST'])]
