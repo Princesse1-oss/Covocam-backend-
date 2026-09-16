@@ -42,6 +42,9 @@ for i in 1 2 3; do
     fi
 done
 
+echo "=== Creating fichier_upload table if missing ==="
+php bin/console doctrine:query:sql "CREATE TABLE IF NOT EXISTS fichier_upload (id SERIAL NOT NULL, dossier VARCHAR(50) DEFAULT NULL, nom VARCHAR(255) DEFAULT NULL, donnees BYTEA DEFAULT NULL, taille INT DEFAULT NULL, type_mime VARCHAR(100) DEFAULT NULL, date_upload TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))" --env=prod --no-interaction || echo "WARN: fichier_upload creation failed (will be covered by schema:update)".
+
 echo "=== Seeding admin user ==="
 php bin/console app:create-user --env=prod 2>&1 || echo "Admin already exists or creation failed"
 
@@ -49,4 +52,4 @@ echo "=== Clearing cache ==="
 php bin/console cache:clear --env=prod --no-debug >/dev/null 2>&1 || true
 
 echo "=== Starting server ==="
-exec php -d upload_max_filesize=10M -d post_max_size=12M -d max_execution_time=300 -S 0.0.0.0:8000 -t public
+exec php -d upload_max_filesize=10M -d post_max_size=12M -d max_execution_time=300 -S 0.0.0.0:8000 -t public public/router.php

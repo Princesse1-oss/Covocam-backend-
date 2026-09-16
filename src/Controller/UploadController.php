@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\FichierUpload;
 use App\Entity\Vehicule;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -56,8 +57,14 @@ class UploadController extends AbstractController
         }
 
         try {
+            // ✅ 2. Lecture des données AVANT déplacement (le déplacement supprime le fichier temporaire)
+            $content = file_get_contents($file->getPathname());
+            $mime = $file->getMimeType() ?: 'application/octet-stream';
+            $taille = $file->getSize();
+
             // ✅ 2. Déplacement du fichier
             $file->move($uploadDir, $newFilename);
+            $this->persistToDb($entityManager, 'profils', $newFilename, $content, $taille, $mime);
             
             // ✅ 3. Suppression de l'ancienne photo si elle existe
             if ($user->getPhoto()) {
@@ -65,6 +72,7 @@ class UploadController extends AbstractController
                 if (file_exists($oldFilePath)) {
                     unlink($oldFilePath);
                 }
+                $this->removeFromDb($entityManager, $user->getPhoto());
             }
 
             // ✅ 4. Mise à jour en base de données
@@ -111,10 +119,10 @@ class UploadController extends AbstractController
         }
 
         try {
-            $filename = $this->uploadFile($file, 'vehicules', $slugger);
+            $filename = $this->uploadFile($file, 'vehicules', $slugger, $entityManager);
             
             if ($vehicule->getPhotoAvant()) {
-                $this->deleteFile($vehicule->getPhotoAvant());
+                $this->deleteFile($vehicule->getPhotoAvant(), $entityManager);
             }
 
             $vehicule->setPhotoAvant($filename);
@@ -134,7 +142,8 @@ class UploadController extends AbstractController
     #[Route('/trajet', name: 'trajet', methods: ['POST'])]
     public function uploadTrajet(
         Request $request,
-        SluggerInterface $slugger
+        SluggerInterface $slugger,
+        EntityManagerInterface $entityManager
     ): JsonResponse {
         $user = $this->getUser();
         if (!$user) {
@@ -152,7 +161,7 @@ class UploadController extends AbstractController
         }
 
         try {
-            $filename = $this->uploadFile($file, 'trajets', $slugger);
+            $filename = $this->uploadFile($file, 'trajets', $slugger, $entityManager);
 
             return $this->json([
                 'message' => 'Photo du trajet téléchargée avec succès',
@@ -183,7 +192,7 @@ class UploadController extends AbstractController
         }
 
         if ($user->getPhoto() === $filename) {
-            $this->deleteFile($filename);
+            $this->deleteFile($filename, $entityManager);
             $user->setPhoto(null);
             
             $entityManager->flush();
@@ -210,34 +219,71 @@ class UploadController extends AbstractController
         return null;
     }
 
-       private function uploadFile(UploadedFile $file, string $subdirectory, SluggerInterface $slugger): string
+    private function persistToDb(
+        EntityManagerInterface $em,
+        string $dossier,
+        string $nom,
+        string $content,
+        int $taille,
+        string $mime,
+    ): void {
+        $fichier = (new FichierUpload())
+            ->setDossier($dossier)
+            ->setNom($nom)
+            ->setTaille($taille)
+            ->setTypeMime($mime)
+            ->setDonnees($content);
+
+        $em->persist($fichier);
+        $em->flush();
+    }
+
+    private function removeFromDb(EntityManagerInterface $em, string $nom): void
     {
+        $repo = $em->getRepository(FichierUpload::class);
+        foreach ($repo->findBy(['nom' => $nom]) as $old) {
+            $em->remove($old);
+        }
+        $em->flush();
+    }
+
+    private function uploadFile(
+        UploadedFile $file,
+        string $subdirectory,
+        SluggerInterface $slugger,
+        EntityManagerInterface $em,
+    ): string {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $slugger->slug($originalFilename);
         $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->getClientOriginalExtension();
 
         $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/' . $subdirectory;
         
-        // ✅ Créer le dossier s'il n'existe pas
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
 
+        $content = file_get_contents($file->getPathname());
+        $mime = $file->getMimeType() ?: 'application/octet-stream';
+        $taille = $file->getSize();
+
         $file->move($uploadDir, $newFilename);
+        $this->persistToDb($em, $subdirectory, $newFilename, $content, $taille, $mime);
 
         return $newFilename;
     }
 
-    private function deleteFile(string $filename): void
+    private function deleteFile(string $filename, EntityManagerInterface $em): void
     {
         $paths = ['profils', 'vehicules', 'trajets'];
         foreach ($paths as $path) {
             $filePath = $this->getParameter('kernel.project_dir') . '/public/uploads/' . $path . '/' . $filename;
             if (file_exists($filePath)) {
                 unlink($filePath);
-                return;
+                break;
             }
         }
+        $this->removeFromDb($em, $filename);
     }
 
     
