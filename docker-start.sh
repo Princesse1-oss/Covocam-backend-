@@ -52,4 +52,4 @@ echo "=== Clearing cache ==="
 php bin/console cache:clear --env=prod --no-debug >/dev/null 2>&1 || true
 
 echo "=== Starting server ==="
-exec php -d upload_max_filesize=10M -d post_max_size=12M -d max_execution_time=300 -S 0.0.0.0:8000 -t public public/router.php
+exec php -d upload_max_filesize=10M -d post_max_size=12M -d max_execution_time=300 -S 0.0.0.0:8000 -t public
